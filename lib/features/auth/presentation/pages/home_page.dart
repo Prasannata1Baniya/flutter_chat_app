@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_chat_app/features/auth/domain/entity/user_entity.dart';
-import 'package:flutter_chat_app/features/auth/presentation/cubits/auth-cubit/auth_state.dart';
+
+import '../../domain/entity/user_entity.dart';
+import '../cubits/auth-cubit/auth_state.dart';
+import 'chat_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -9,6 +11,9 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Center(child: Text("Home Page")),
+      ),
       body: BlocConsumer(builder: (context,state){
        if(state is LoadingState){
          return const CircularProgressIndicator();
@@ -21,7 +26,9 @@ class HomePage extends StatelessWidget {
                final user=users[index];
            return GestureDetector(
              onTap: (){
-
+               //context.read<ChatCubit>().
+               Navigator.push(context, MaterialPageRoute(
+                   builder: (context)=>const ChatScreen(chatId: '')));
              },
              child: ListTile(
                title: Text(user.name ?? ''),

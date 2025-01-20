@@ -10,6 +10,7 @@ class AuthenticatedState extends AuthState{
   final UserEntity? user;
   AuthenticatedState(this.user);
 }
+class UnAuthenticatedState extends AuthState{}
 
 class FailureState extends AuthState{
   final String error;

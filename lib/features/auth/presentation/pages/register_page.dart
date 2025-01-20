@@ -1,25 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_chat_app/features/auth/presentation/cubits/auth-cubit/auth_cubit.dart';
-import 'package:flutter_chat_app/features/auth/presentation/cubits/auth-cubit/auth_state.dart';
-import 'package:flutter_chat_app/features/auth/presentation/pages/home_page.dart';
-import 'package:flutter_chat_app/features/auth/presentation/widgets/my_text_field.dart';
+import '../cubits/auth-cubit/auth_cubit.dart';
+import '../cubits/auth-cubit/auth_state.dart';
+import '../widgets/my_text_field.dart';
+import 'home_page.dart';
 
-class RegisterPage extends StatelessWidget {
+class RegisterPage extends StatefulWidget {
   final void Function()? onTap;
   const  RegisterPage({super.key,required this.onTap});
 
   @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  late final TextEditingController nameController;
+  late final TextEditingController emailController;
+  late final TextEditingController passwordController;
+
+
+  @override
+  void initState() {
+    super.initState();
+    nameController = TextEditingController();
+    emailController = TextEditingController();
+    passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
-    final TextEditingController nameController=TextEditingController();
-    final TextEditingController emailController=TextEditingController();
-    final TextEditingController passwordController=TextEditingController();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Center(child: Text("Login Page")),
+        title: const Center(child: Text("Register Page")),
       ),
-      body:BlocListener(
+      body:BlocListener<AuthCubit,AuthState>(
           listener: (context,state){
             if(state is AuthenticatedState){
               Navigator.push(context, MaterialPageRoute(
@@ -31,7 +55,7 @@ class RegisterPage extends StatelessWidget {
       },
       child: Column(
         children: [
-          const Icon(Icons.login,size: 100,),
+          const Icon(Icons.app_registration,size: 100,),
           const SizedBox(height:30),
           MyTextField(hText: "name", controller: nameController)  ,
           const SizedBox(height:12),
@@ -51,14 +75,14 @@ class RegisterPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 color:Colors.black,
               ),
-              child: const Text("Login",style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold,
+              child: const Text("Register",style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold,
                   color: Colors.white),
               ),
             ),
           ),
           const Text("Already a member!"),
           GestureDetector(
-            onTap: onTap,
+            onTap: widget.onTap,
             child:const Text("Login!"),
           ),
         ],
