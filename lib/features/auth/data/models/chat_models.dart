@@ -1,0 +1,28 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class Message{
+  final String id;
+  final String senderId;
+  final String text;
+  final Timestamp timeStamp;
+
+  Message({required this.id,required this.senderId, required this.text,
+  required this.timeStamp});
+
+  factory Message.fromDocument(DocumentSnapshot doc){
+   return Message(
+     id: doc.id,
+     senderId: doc['senderId'],
+     text: doc['text'],
+     timeStamp: doc['timeStamp'],
+   );
+  }
+
+  Map<String,dynamic> toMap(){
+    return {
+      'senderId':senderId,
+      'text':text,
+      'timeStamp':FieldValue.serverTimestamp(),
+    };
+  }
+}
