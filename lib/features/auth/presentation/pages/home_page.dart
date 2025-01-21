@@ -28,7 +28,7 @@ class HomePage extends StatelessWidget {
              onTap: (){
                //context.read<ChatCubit>().
                Navigator.push(context, MaterialPageRoute(
-                   builder: (context)=>const ChatScreen(chatId: '')));
+                   builder: (context)=>ChatScreen(chatId: user.uid)));
              },
              child: ListTile(
                title: Text(user.name ?? ''),

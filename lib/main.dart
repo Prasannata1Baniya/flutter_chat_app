@@ -52,7 +52,12 @@ class MyApp extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          if (state is UnAuthenticatedState) {
+         if (state is AuthInitialState) {
+            return const Scaffold(
+             body: Center(child: Text("Initializing...")),
+           );
+          }
+          else if (state is UnAuthenticatedState) {
             return const AuthPage();
           } else if (state is LoadingState) {
             return const Scaffold(
@@ -66,66 +71,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-/*void main() async{
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  final authRepo=AuthRepoImpl(FirebaseAuth.instance as FirebaseFirestore);
-  final chatRepo=ChatRepoImpl(FirebaseAuth.instance as FirebaseFirestore);
-
-  runApp(
-    MultiBlocProvider(providers: [
-      BlocProvider(create: (_)=> AuthCubit(authRepo: authRepo)),
-      BlocProvider(create: (_)=> ChatCubit(chatRepo)),
-    ], child: MyApp()),
-  );
-}
-
-class MyApp extends StatelessWidget {
-  final authRepo=AuthRepoImpl(FirebaseFirestore.instance);
-  MyApp({super.key});
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-
-    return BlocProvider(
-      create: ( context)=> AuthCubit(authRepo: authRepo)..checkCurrentUser(),
-      child: MaterialApp(
-        home:BlocConsumer<AuthCubit,AuthState>(
-            builder: (context,state) {
-              if(state is AuthenticatedState){
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context)=>const HomePage()));
-              }
-              if(state is UnAuthenticatedState){
-                return const AuthPage();
-              }
-              else{
-                return const Scaffold(
-                    body:CircularProgressIndicator()
-                );
-              }
-            },
-            listener: (context,state){
-              if(state is FailureState){
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(state.error)));
-              }
-            }
-        ),
-      ),
-    );
-  }
-}
-*/
