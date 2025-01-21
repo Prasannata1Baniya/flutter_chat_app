@@ -50,10 +50,14 @@ class LoginPage extends StatelessWidget {
           ),
         ),
       ),
-      const Text("New member!"),
-      GestureDetector(
-        onTap: onTap,
-        child:const Text("Register now"),
+      Row(
+        children: [
+          const Text("New member!"),
+          GestureDetector(
+            onTap: onTap,
+            child:const Text("Register now",style: TextStyle(color: Colors.blue),),
+          ),
+        ],
       ),
       ],
     ),

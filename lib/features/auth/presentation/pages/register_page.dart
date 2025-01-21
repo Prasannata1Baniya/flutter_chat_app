@@ -80,10 +80,14 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
           ),
-          const Text("Already a member!"),
-          GestureDetector(
-            onTap: widget.onTap,
-            child:const Text("Login!"),
+          Row(
+            children: [
+              const Text("Already a member!"),
+              GestureDetector(
+                onTap: widget.onTap,
+                child:const Text("Login!",style: TextStyle(color:Colors.blue),),
+              ),
+            ],
           ),
         ],
       ),

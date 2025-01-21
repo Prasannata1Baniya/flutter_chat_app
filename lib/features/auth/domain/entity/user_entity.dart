@@ -17,9 +17,10 @@ class UserEntity{
 
    factory UserEntity.fromJson(Map<String,dynamic> json){
      return UserEntity(
-         uid: json['uid'],
-         name: json['name'],
-         email: json['email']);
+         uid: json['uid']??'',
+         name: json['name']??'',
+         email: json['email']??''
+     );
    }
 
  factory UserEntity.fromMap(Map<String, dynamic> map) {
