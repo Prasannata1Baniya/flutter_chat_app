@@ -41,25 +41,25 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
-          if (state is AuthenticatedState) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const HomePage()),
-            );
-          } else if (state is FailureState) {
+           if (state is FailureState) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.error)),
             );
           }
         },
         builder: (context, state) {
-         if (state is AuthInitialState) {
+         /*if (state is AuthInitialState) {
             return const Scaffold(
              body: Center(child: Text("Initializing...")),
            );
-          }
+          }*/
+          if (state is AuthenticatedState) {
+          return const HomePage();
+         }
           else if (state is UnAuthenticatedState) {
             return const AuthPage();
-          } else if (state is LoadingState) {
+          }
+          else if (state is LoadingState) {
             return const Scaffold(
               body: Center(child: CircularProgressIndicator()),
             );
