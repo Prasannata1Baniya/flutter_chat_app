@@ -6,11 +6,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_app/features/auth/data/repo/auth_repo_impl.dart';
 import 'package:flutter_chat_app/features/auth/data/repo/chat_repo_impl.dart';
 import 'package:flutter_chat_app/features/auth/presentation/pages/home_page.dart';
-import 'package:flutter_chat_app/firebase_options.dart';
 import 'features/auth/presentation/cubits/auth-cubit/auth_cubit.dart';
 import 'features/auth/presentation/cubits/auth-cubit/auth_state.dart';
 import 'features/auth/presentation/cubits/chat-cubit/chat_cubit.dart';
 import 'features/auth/presentation/pages/auth_page.dart';
+import 'firebase_options.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,31 +39,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final  authRepo=AuthRepoImpl(FirebaseFirestore.instance, FirebaseAuth.instance);
-    return BlocProvider(
-      create: ( context)=> AuthCubit(authRepo: authRepo)..checkCurrentUser(),
-      child: MaterialApp(
-        home:BlocConsumer<AuthCubit,AuthState>(
-            builder: (context,state) {
-              if(state is AuthenticatedState){
-                return const HomePage();
-              }
-              if(state is UnAuthenticatedState){
-                return const AuthPage();
-              }
-              else{
-                return const Scaffold(
-                    body:CircularProgressIndicator()
-                );
-              }
-            },
-            listener: (context,state){
-              if(state is FailureState){
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(state.error)));
-              }
+    return MaterialApp(
+      home:BlocConsumer<AuthCubit,AuthState>(
+          builder: (context,state) {
+            if(state is AuthenticatedState){
+              return const HomePage();
             }
-        ),
+            if(state is UnAuthenticatedState){
+              return const AuthPage();
+            }
+            else{
+              return const Scaffold(
+                  body:CircularProgressIndicator()
+              );
+            }
+          },
+          listener: (context,state){
+            if(state is FailureState){
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(state.error)));
+            }
+          }
       ),
     );
   }
