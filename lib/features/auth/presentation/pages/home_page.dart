@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_chat_app/features/auth/presentation/cubits/auth-cubit/auth_cubit.dart';
 
 import '../../domain/entity/user_entity.dart';
 import '../cubits/auth-cubit/auth_state.dart';
@@ -13,6 +14,14 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Center(child: Text("Home Page")),
+        actions:[
+           IconButton(
+               onPressed: (){
+                 context.read<AuthCubit>().logOut();
+               },
+               icon:const Icon(Icons.logout)
+           ),
+        ]
       ),
       body: BlocConsumer(builder: (context,state){
        if(state is LoadingState){
@@ -53,5 +62,3 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-
-
