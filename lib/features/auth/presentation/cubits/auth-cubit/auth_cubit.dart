@@ -30,7 +30,8 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> register(String name, String email, String password) async {
     emit(LoadingState());
     try {
-      final user = await authRepo.createUserWithEmailAndPassword(name, email, password);
+      final user = await authRepo.createUserWithEmailAndPassword(
+          name, email, password);
       if (user != null) {
         emit(AuthenticatedState(user));
       } else {
@@ -61,7 +62,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final user = await authRepo.getCurrentUser();
       if (user != null) {
-        _currentUser=user;
+        _currentUser = user;
         emit(AuthenticatedState(user));
       } else {
         emit(UnAuthenticatedState());
@@ -71,8 +72,32 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  // Fetch Users Excluding Current User
+
+// Fetch Users Excluding Current User
   Future<void> fetchUsersExcluding() async {
+    emit(LoadingState()); // Indicate that data fetching has started
+    try {
+      // Fetch all users and current user
+      final users = await authRepo.fetchAllUsers();
+      final currentUser = await authRepo.getCurrentUser();
+
+      // Filter out the current user
+      final filteredUsers = users.where((user) => user.uid != currentUser?.uid).toList();
+
+      // Handle empty user list
+      if (filteredUsers.isEmpty) {
+        emit(FailureState("No users found."));
+      } else {
+        emit(UsersFetchedState(filteredUsers));
+      }
+    } catch (e) {
+      // Emit failure state in case of an error
+      emit(FailureState("Error fetching users: $e"));
+    }
+  }
+
+}
+ /* Future<void> fetchUsersExcluding() async {
     try {
       final users = await authRepo.fetchAllUsers();
       final currentUser = await authRepo.getCurrentUser();
@@ -82,4 +107,4 @@ class AuthCubit extends Cubit<AuthState> {
       emit(FailureState(e.toString()));
     }
   }
-}
+*/
