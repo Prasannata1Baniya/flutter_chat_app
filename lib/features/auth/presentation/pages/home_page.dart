@@ -10,7 +10,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<AuthCubit>().fetchUsersExcluding();
+    //context.read<AuthCubit>().fetchUsersExcluding();
     return Scaffold(
       appBar: AppBar(
         title: const Text("Home Page"),
@@ -25,6 +25,10 @@ class HomePage extends StatelessWidget {
       ),
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
+          if (state is AuthenticatedState) {
+            // Fetch users after successful login
+            context.read<AuthCubit>().fetchUsersExcluding();
+          }
           if (state is FailureState) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.error), backgroundColor: Colors.red),
