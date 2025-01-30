@@ -22,3 +22,5 @@ class UsersFetchedState extends AuthState{
   UsersFetchedState(this.users);
 }
 
+class NoUsersFoundState extends AuthState {}
+class NoCurrentUserState extends AuthState{}

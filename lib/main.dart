@@ -40,22 +40,22 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home:BlocConsumer<AuthCubit,AuthState>(
-          builder: (context,state) {
-            if(state is AuthenticatedState){
+      home: BlocConsumer<AuthCubit, AuthState>(
+          builder: (context, state) {
+            if (state is AuthenticatedState) {
               return const HomePage();
             }
-            if(state is UnAuthenticatedState){
+            if (state is UnAuthenticatedState) {
               return const AuthPage();
             }
-            else{
+            else {
               return const Scaffold(
-                  body:CircularProgressIndicator()
+                  body: CircularProgressIndicator()
               );
             }
           },
-          listener: (context,state){
-            if(state is FailureState){
+          listener: (context, state) {
+            if (state is FailureState) {
               ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(state.error)));
             }
@@ -63,42 +63,4 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
-
-
-    /*MaterialApp(
-      home: BlocConsumer<AuthCubit, AuthState>(
-        listener: (context, state) {
-           if (state is FailureState) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.error)),
-            );
-          }
-        },
-        builder: (context, state) {
-         /*if (state is AuthInitialState) {
-            return const Scaffold(
-             body: Center(child: Text("Initializing...")),
-           );
-          }*/
-          if (state is AuthenticatedState) {
-          return const HomePage();
-         }
-          else if (state is UnAuthenticatedState) {
-            return const AuthPage();
-          }
-          else{
-
-          }
-          /*else if (state is LoadingState) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
-          }
-          else {
-            return const Placeholder(); // Placeholder for intermediate states
-          }*/
-        },
-      ),
-    );
-  }*/
 }

@@ -96,7 +96,8 @@ class AuthRepoImpl implements AuthRepo {
   @override
   Future<List<UserEntity>> fetchAllUsers() async {
     try {
-      final querySnapshot = await _firestore.collection('users').get();
+      final QuerySnapshot<Map<String, dynamic>> querySnapshot =
+      await _firestore.collection('users').get();
       return querySnapshot.docs
           .map((doc) => UserEntity.fromJson(doc.data()))
           .toList();

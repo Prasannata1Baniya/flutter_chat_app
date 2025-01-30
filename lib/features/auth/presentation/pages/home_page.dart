@@ -58,8 +58,12 @@ class HomePage extends StatelessWidget {
                 );
               },
             );
-          } else {
-            return const Center(child: Text("No users found"));
+          } else if (state is NoUsersFoundState) { // Handle no users
+            return const Center(child: Text("No other users found."));
+          } else if (state is NoCurrentUserState) { // Handle no current user
+            return const Center(child: Text("No current user found."));
+          }else {
+            return const Center(child: Text("Initial State"));
           }
         },
       ),
