@@ -26,12 +26,19 @@ class AuthRepoImpl implements AuthRepo {
           email: email,
         );
 
-        // Optionally, save user data to Firestore
+        // Update the FirebaseAuth user profile
+        await userCredential.user?.updateDisplayName(name);
+        await userCredential.user?.reload(); // Ensure the updated profile is fetched
+
+        // Save to Firestore
+        await _firestore.collection('users').doc(user.uid).set(user.toJson());
+
+        /*// Optionally, save user data to Firestore
         await _firestore.collection('users').doc(user.uid).set({
           'uid': user.uid,
           'name': user.name,
           'email': user.email,
-        });
+        });*/
 
         return user;
       }
@@ -63,8 +70,29 @@ class AuthRepoImpl implements AuthRepo {
     }
     return null;
   }
-
   @override
+  Future<UserEntity?> getCurrentUser() async {
+    try {
+      User? user = _firebaseAuth.currentUser;
+
+      if (user == null) {
+        debugPrint("No current user found.");
+        return null;
+      }
+
+      debugPrint("Current user found: ${user.email}");
+      return UserEntity(
+        uid: user.uid,
+        name: user.displayName ?? 'No Name',
+        email: user.email ?? '',
+      );
+    } catch (e) {
+      debugPrint("Error fetching current user: $e");
+      throw Exception("Failed to fetch current user");
+    }
+  }
+
+  /*@override
   Future<UserEntity?> getCurrentUser() async {
     try {
       User? user = _firebaseAuth.currentUser;
@@ -81,7 +109,7 @@ class AuthRepoImpl implements AuthRepo {
       throw Exception("Failed to fetch current user");
     }
     return null;
-  }
+  }*/
 
   @override
   Future<void> logOut() async {

@@ -10,7 +10,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //context.read<AuthCubit>().fetchUsersExcluding();
+    context.read<AuthCubit>().fetchUsersExcluding();
     return Scaffold(
       appBar: AppBar(
         title: const Text("Home Page"),
@@ -63,7 +63,7 @@ class HomePage extends StatelessWidget {
           } else if (state is NoCurrentUserState) { // Handle no current user
             return const Center(child: Text("No current user found."));
           }else {
-            return const Center(child: Text("Initial State"));
+            return const Center(child: Text("Loading users..."));
           }
         },
       ),
