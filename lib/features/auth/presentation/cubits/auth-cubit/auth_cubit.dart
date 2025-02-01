@@ -119,14 +119,4 @@ class AuthCubit extends Cubit<AuthState> {
 
 }
 
- /* Future<void> fetchUsersExcluding() async {
-    try {
-      final users = await authRepo.fetchAllUsers();
-      final currentUser = await authRepo.getCurrentUser();
-      final filteredUsers = users.where((user) => user.uid != currentUser?.uid).toList();
-      emit(UsersFetchedState(filteredUsers));
-    } catch (e) {
-      emit(FailureState(e.toString()));
-    }
-  }
-*/
+
