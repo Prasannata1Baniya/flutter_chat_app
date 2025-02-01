@@ -5,8 +5,22 @@ import '../cubits/auth-cubit/auth_cubit.dart';
 import '../cubits/auth-cubit/auth_state.dart';
 import 'chat_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+  @override
+  void initState(){
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AuthCubit>().fetchUsersExcluding();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
