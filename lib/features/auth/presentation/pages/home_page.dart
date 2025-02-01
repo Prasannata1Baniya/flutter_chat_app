@@ -14,13 +14,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  @override
+ /* @override
   void initState(){
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AuthCubit>().fetchUsersExcluding();
     });
   }
+  */
 
   @override
   Widget build(BuildContext context) {
