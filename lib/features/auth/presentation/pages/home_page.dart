@@ -14,14 +14,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
- /* @override
+   @override
   void initState(){
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AuthCubit>().fetchUsersExcluding();
     });
   }
-  */
+
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,32 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: BlocConsumer<AuthCubit, AuthState>(
+      body: BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, state) {
+          if (state is LoadingState) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is UsersFetchedState) {
+            final users = state.users; // Assuming you have this state defined
+            return ListView.builder(
+              itemCount: users.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(users[index].name ?? 'No Name'),
+                  subtitle: Text(users[index].email),
+                );
+              },
+            );
+          } else if (state is NoUsersFoundState) {
+            return const Center(child: Text("No users found."));
+          } else if (state is FailureState) {
+            return Center(child: Text("Error: ${state.error}"));
+          }
+          return const Center(child: Text("Welcome!"));
+        },
+      ),
+
+
+     /* BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
           if (state is AuthenticatedState) {
             // Fetch users after successful login
@@ -81,7 +106,7 @@ class _HomePageState extends State<HomePage> {
             return const Center(child: Text("Loading users..."));
           }
         },
-      ),
+      ),*/
     );
   }
 }
