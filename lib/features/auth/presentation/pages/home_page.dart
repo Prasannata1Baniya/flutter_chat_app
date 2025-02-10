@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/entity/user_entity.dart';
 import '../cubits/auth-cubit/auth_cubit.dart';
 import '../cubits/auth-cubit/auth_state.dart';
-import 'chat_page.dart';
+//import '../../domain/entity/user_entity.dart';
+//import 'chat_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,7 +21,6 @@ class _HomePageState extends State<HomePage> {
       context.read<AuthCubit>().fetchUsersExcluding();
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
