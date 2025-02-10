@@ -40,9 +40,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: BlocConsumer<AuthCubit, AuthState>(
           builder: (context, state) {
             if (state is AuthenticatedState) {
+              context.read<AuthCubit>().fetchUsersExcluding();
               return const HomePage();
             }
             if (state is UnAuthenticatedState) {

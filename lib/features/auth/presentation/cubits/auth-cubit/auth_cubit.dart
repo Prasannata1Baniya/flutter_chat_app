@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_app/features/auth/domain/repo/auth_repo.dart';
 import 'package:flutter_chat_app/features/auth/presentation/cubits/auth-cubit/auth_state.dart';
@@ -17,6 +18,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final user = await authRepo.loginWithEmailAndPassword(email, password);
       if (user != null) {
+        _currentUser=user;
         emit(AuthenticatedState(user));
       } else {
         emit(FailureState('Login Failed'));
@@ -33,6 +35,7 @@ class AuthCubit extends Cubit<AuthState> {
       final user = await authRepo.createUserWithEmailAndPassword(
           name, email, password);
       if (user != null) {
+        _currentUser=user;
         emit(AuthenticatedState(user));
       } else {
         emit(FailureState('Register Failed'));
@@ -106,6 +109,7 @@ class AuthCubit extends Cubit<AuthState> {
 
       final users = await authRepo.fetchAllUsers();
       final filteredUsers = users.where((user) => user.uid != currentUser.uid).toList();
+      debugPrint("Users fetched: ${users.length}");
 
       if (filteredUsers.isEmpty) {
         emit(NoUsersFoundState()); // New state for no other users

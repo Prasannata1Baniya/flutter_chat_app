@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubits/auth-cubit/auth_cubit.dart';
 import '../cubits/auth-cubit/auth_state.dart';
-//import '../../domain/entity/user_entity.dart';
-//import 'chat_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,26 +12,26 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-   @override
+   /*@override
   void initState(){
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AuthCubit>().fetchUsersExcluding();
     });
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
-    //context.read<AuthCubit>().fetchUsersExcluding();
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Home Page"),
+        backgroundColor: Colors.black,
+        title: const Center(child: Text("Home Page",style:TextStyle(color:Colors.white))),
         actions: [
           IconButton(
             onPressed: () {
               context.read<AuthCubit>().logOut();
             },
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout,color:Colors.white),
           ),
         ],
       ),
@@ -41,20 +39,24 @@ class _HomePageState extends State<HomePage> {
         builder: (context, state) {
           if (state is LoadingState) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is UsersFetchedState) {
-            final users = state.users; // Assuming you have this state defined
+          }
+          else if (state is UsersFetchedState) {
+           // final  users = state.users;
             return ListView.builder(
-              itemCount: users.length,
+              itemCount:state.users.length,
               itemBuilder: (context, index) {
+                final user = state.users[index];
                 return ListTile(
-                  title: Text(users[index].name ?? 'No Name'),
-                  subtitle: Text(users[index].email),
+                  title: Text(user.name ?? 'No Name'),
+                  subtitle: Text(user.email),
                 );
               },
             );
-          } else if (state is NoUsersFoundState) {
+          }
+          else if (state is NoUsersFoundState) {
             return const Center(child: Text("No users found."));
-          } else if (state is FailureState) {
+          }
+          else if (state is FailureState) {
             return Center(child: Text("Error: ${state.error}"));
           }
           return const Center(child: Text("Welcome!"));
