@@ -12,8 +12,67 @@ import 'features/auth/presentation/cubits/chat-cubit/chat_cubit.dart';
 import 'features/auth/presentation/pages/auth_page.dart';
 import 'firebase_options.dart';
 
-
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  final authRepo = AuthRepoImpl(
+    FirebaseFirestore.instance,
+    FirebaseAuth.instance,
+  );
+  final chatRepo = ChatRepoImpl(FirebaseFirestore.instance);
+
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => AuthCubit(authRepo: authRepo)),
+        BlocProvider(create: (_) => ChatCubit(chatRepo)),
+      ],
+      child: const MyApp(),
+    ),
+  );
+}
+
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          if (snapshot.hasData) {
+            // Fetch users ONCE, not in build
+            context.read<AuthCubit>().fetchUsersExcluding();
+            return const HomePage();
+          }
+
+          return const AuthPage();
+        },
+      ),
+    );
+  }
+}
+
+
+
+
+
+
+
+/*void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -65,4 +124,4 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
-}
+}*/

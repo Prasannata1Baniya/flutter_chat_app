@@ -6,10 +6,11 @@ class AuthInitialState extends AuthState{}
 
 class LoadingState extends AuthState{}
 
-class AuthenticatedState extends AuthState{
-  final UserEntity? user;
+class AuthenticatedState extends AuthState {
+  final UserEntity user;
   AuthenticatedState(this.user);
 }
+
 class UnAuthenticatedState extends AuthState{}
 
 class FailureState extends AuthState{

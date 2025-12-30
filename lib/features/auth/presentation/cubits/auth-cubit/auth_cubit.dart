@@ -1,15 +1,12 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_app/features/auth/domain/repo/auth_repo.dart';
 import 'package:flutter_chat_app/features/auth/presentation/cubits/auth-cubit/auth_state.dart';
-
 import '../../../domain/entity/user_entity.dart';
+
 
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepo authRepo;
-  UserEntity? userEntity;
   UserEntity? _currentUser;
-
   AuthCubit({required this.authRepo}) : super(AuthInitialState());
 
   // Login
@@ -18,10 +15,10 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final user = await authRepo.loginWithEmailAndPassword(email, password);
       if (user != null) {
-        _currentUser=user;
+        _currentUser = user;  // <--- store here
         emit(AuthenticatedState(user));
       } else {
-        emit(FailureState('Login Failed'));
+        emit(FailureState('Login failed'));
       }
     } catch (e) {
       emit(FailureState(e.toString()));
@@ -33,12 +30,13 @@ class AuthCubit extends Cubit<AuthState> {
     emit(LoadingState());
     try {
       final user = await authRepo.createUserWithEmailAndPassword(
-          name, email, password);
+        name, email, password,
+      );
       if (user != null) {
-        _currentUser=user;
+        _currentUser = user;
         emit(AuthenticatedState(user));
       } else {
-        emit(FailureState('Register Failed'));
+        emit(FailureState('Register failed'));
       }
     } catch (e) {
       emit(FailureState(e.toString()));
@@ -50,14 +48,12 @@ class AuthCubit extends Cubit<AuthState> {
     emit(LoadingState());
     try {
       await authRepo.logOut();
+      _currentUser = null;
       emit(UnAuthenticatedState());
     } catch (e) {
       emit(FailureState(e.toString()));
     }
   }
-
-  //get currentUser
-  UserEntity? get currentUser => _currentUser;
 
   // Check Current User
   Future<void> checkCurrentUser() async {
@@ -65,9 +61,10 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final user = await authRepo.getCurrentUser();
       if (user != null) {
-        _currentUser = user;
+        _currentUser = user;  // <--- store here
         emit(AuthenticatedState(user));
       } else {
+        _currentUser = null;
         emit(UnAuthenticatedState());
       }
     } catch (e) {
@@ -75,44 +72,25 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  // Public getter for currentUser
+  UserEntity? get currentUser => _currentUser;
 
-// Fetch Users Excluding Current User
-  /*Future<void> fetchUsersExcluding() async {
-    emit(LoadingState()); // Indicate that data fetching has started
-    try {
-      // Fetch all users and current user
-      final users = await authRepo.fetchAllUsers();
-      final currentUser = await authRepo.getCurrentUser();
-
-      // Filter out the current user
-      final filteredUsers = users.where((user) => user.uid != currentUser?.uid).toList();
-
-      // Handle empty user list
-      if (filteredUsers.isEmpty) {
-        emit(FailureState("No users found."));
-      } else {
-        emit(UsersFetchedState(filteredUsers));
-      }
-    } catch (e) {
-      // Emit failure state in case of an error
-      emit(FailureState("Error fetching users: $e"));
-    }
-  }*/
+  // Fetch users excluding current user
   Future<void> fetchUsersExcluding() async {
     emit(LoadingState());
     try {
-      final currentUser = await authRepo.getCurrentUser(); // Wait for current user
+      final currentUser = await authRepo.getCurrentUser();
       if (currentUser == null) {
-        emit(NoCurrentUserState()); // New state for no current user
-        return; // Important: Exit early if no current user
+        emit(NoCurrentUserState());
+        return;
       }
 
       final users = await authRepo.fetchAllUsers();
-      final filteredUsers = users.where((user) => user.uid != currentUser.uid).toList();
-      debugPrint("Users fetched: ${users.length}");
+      final filteredUsers =
+      users.where((u) => u.uid != currentUser.uid).toList();
 
       if (filteredUsers.isEmpty) {
-        emit(NoUsersFoundState()); // New state for no other users
+        emit(NoUsersFoundState());
       } else {
         emit(UsersFetchedState(filteredUsers));
       }
@@ -120,7 +98,4 @@ class AuthCubit extends Cubit<AuthState> {
       emit(FailureState("Error fetching users: $e"));
     }
   }
-
 }
-
-
