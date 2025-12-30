@@ -7,7 +7,6 @@ import 'package:flutter_chat_app/features/auth/data/repo/auth_repo_impl.dart';
 import 'package:flutter_chat_app/features/auth/data/repo/chat_repo_impl.dart';
 import 'package:flutter_chat_app/features/auth/presentation/pages/home_page.dart';
 import 'features/auth/presentation/cubits/auth-cubit/auth_cubit.dart';
-import 'features/auth/presentation/cubits/auth-cubit/auth_state.dart';
 import 'features/auth/presentation/cubits/chat-cubit/chat_cubit.dart';
 import 'features/auth/presentation/pages/auth_page.dart';
 import 'firebase_options.dart';
