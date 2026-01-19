@@ -18,7 +18,7 @@ class Message {
       id: doc.id,
       senderId: doc['senderId'] ?? '',
       text: doc['text'] ?? '',
-      timeStamp: doc['timeStamp'] as Timestamp?,  // safely cast to nullable Timestamp
+      timeStamp: doc['timeStamp'] as Timestamp?,
     );
   }
 

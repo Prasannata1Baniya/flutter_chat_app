@@ -14,12 +14,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   String generateChatId(String userId1, String userId2) {
-    if (userId1.compareTo(userId2) > 0) {
-      return '${userId1}_$userId2';
-    } else {
-      return '${userId2}_$userId1';
-    }
+    final ids = [userId1, userId2]..sort();
+    return ids.join('_');
   }
+
 
   @override
   void initState() {
@@ -92,11 +90,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-
-  /*String createChatId(String uid1, String uid2) {
-    final uids = [uid1, uid2]..sort();
-    return uids.join('_');
-  }*/
 }
 
 
