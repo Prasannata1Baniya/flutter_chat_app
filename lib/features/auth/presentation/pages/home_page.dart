@@ -12,6 +12,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
   String generateChatId(String userId1, String userId2) {
     final ids = [userId1, userId2]..sort();
     return ids.join('_');
@@ -27,21 +28,43 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = context.read<AuthCubit>().currentUser;
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FB),
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        centerTitle: false,
-        title: const Text("Messages",
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 24)),
-        actions: [
-          IconButton(
-            onPressed: () => context.read<AuthCubit>().logOut(),
-            icon: const Icon(Icons.logout_rounded, color: Colors.redAccent),
+     appBar: AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white, // Modern white background
+      toolbarHeight: 70,
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 16.0),
+        child: CircleAvatar(
+          backgroundColor: Colors.blue.shade100,
+          child: Text(
+            currentUser?.name?[0].toUpperCase() ?? 'U',
+            style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Messages",
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 22),
+          ),
+          Text(
+            currentUser?.email ?? "",
+            style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
           ),
         ],
       ),
+      actions: [
+        IconButton(
+          onPressed: () => context.read<AuthCubit>().logOut(),
+          icon: const Icon(Icons.logout_rounded, color: Colors.redAccent),
+        ),
+      ],
+    ),
       body: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, state) {
           if (state is UsersFetchedState) {
