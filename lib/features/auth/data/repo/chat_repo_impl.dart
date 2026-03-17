@@ -10,7 +10,7 @@ class ChatRepoImpl implements ChatRepo {
 
   @override
   Stream<List<Message>> getMessages(String chatID) {
-    // Added .orderBy('timestamp') to ensure messages are in chronological order
+    // .orderBy('timestamp') is added to ensure messages are in chronological order
     return _firestore
         .collection('chats')
         .doc(chatID)
@@ -25,8 +25,8 @@ class ChatRepoImpl implements ChatRepo {
   @override
   Future<void> sendMessage(String chatId, Message message) async {
     try {
-      // FIX: Ensure every message has a Server Timestamp
-      // Using FieldValue.serverTimestamp() is more accurate than local device time
+      // every message has a Server Timestamp
+      // FieldValue.serverTimestamp() is more accurate than local device time
       final messageData = message.toMap();
       messageData['timestamp'] = FieldValue.serverTimestamp();
 
@@ -43,28 +43,3 @@ class ChatRepoImpl implements ChatRepo {
   }
 }
 
-
-/*class ChatRepoImpl implements ChatRepo {
-  final FirebaseFirestore _firestore;
-
-  ChatRepoImpl(this._firestore);
-
-  @override
-  Stream<List<Message>> getMessages(String chatID) {
-    return _firestore.collection('chats/$chatID/messages').snapshots().map(
-          (snapshot) {
-        return snapshot.docs.map((doc) => Message.fromDocument(doc)).toList();
-      },
-    );
-  }
-
-  @override
-  Future<void> sendMessage(String chatId, Message message) async {
-    try {
-      await _firestore.collection('chats/$chatId/messages').add(message.toMap());
-    } catch (e) {
-      debugPrint("Error sending message: $e");
-      throw Exception("Failed to send message");
-    }
-  }
-}*/

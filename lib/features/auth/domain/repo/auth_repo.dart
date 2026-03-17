@@ -1,12 +1,3 @@
-/*
-   -chat app
-   -loginWithEmailAndPassword
-   -register
-   -logOut
-   -getCurrentUser
-
- */
-
 import '../entity/user_entity.dart';
 
 abstract class AuthRepo {

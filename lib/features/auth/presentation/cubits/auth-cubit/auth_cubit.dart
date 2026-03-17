@@ -61,7 +61,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final user = await authRepo.getCurrentUser();
       if (user != null) {
-        _currentUser = user;  // <--- store here
+        _currentUser = user;
         emit(AuthenticatedState(user));
       } else {
         _currentUser = null;

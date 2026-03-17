@@ -1,17 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class Message {
   final String id;
   final String senderId;
   final String text;
-  final Timestamp? timestamp; // Nullable for pending messages
+  final Timestamp? timestamp; // Nullable to handle "Pending" state safely
 
   Message({
     required this.id,
     required this.senderId,
     required this.text,
-    required this.timestamp,
+    this.timestamp,
   });
+
+  String get formattedTime {
+    if (timestamp == null) return "Sending...";
+    return DateFormat('hh:mm a').format(timestamp!.toDate());
+  }
 
   // Factory to convert Firestore Document to Message Object
   factory Message.fromDocument(DocumentSnapshot doc) {
@@ -21,7 +27,7 @@ class Message {
       id: doc.id,
       senderId: data['senderId'] ?? '',
       text: data['text'] ?? '',
-      // FIX: Handle the "Pending" null state safely
+      // If the server hasn't set the time yet (local cache), this will be null
       timestamp: data['timestamp'] as Timestamp?,
     );
   }
@@ -31,44 +37,7 @@ class Message {
     return {
       'senderId': senderId,
       'text': text,
-      // FIX: Ensure the key matches the one in fromDocument ('timestamp')
       'timestamp': FieldValue.serverTimestamp(),
     };
   }
 }
-
-
-
-/*import 'package:cloud_firestore/cloud_firestore.dart';
-
-class Message {
-  final String id;
-  final String senderId;
-  final String text;
-  final Timestamp? timeStamp;  // nullable now
-
-  Message({
-    required this.id,
-    required this.senderId,
-    required this.text,
-    this.timeStamp,
-  });
-
-  factory Message.fromDocument(DocumentSnapshot doc) {
-    return Message(
-      id: doc.id,
-      senderId: doc['senderId'] ?? '',
-      text: doc['text'] ?? '',
-      timeStamp: doc['timeStamp'] as Timestamp?,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'senderId': senderId,
-      'text': text,
-      'timeStamp': FieldValue.serverTimestamp(),
-    };
-  }
-}
-*/

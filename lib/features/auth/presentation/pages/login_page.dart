@@ -15,144 +15,128 @@ class LoginPage extends StatelessWidget {
     final TextEditingController passwordController = TextEditingController();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Center(child: Text("Login Page")),
-      ),
+      backgroundColor: const Color(0xFFF3F4F6),
       body: BlocListener<AuthCubit, AuthState>(
         listener: (context, state) {
           if (state is AuthenticatedState) {
-            Navigator.push(context, MaterialPageRoute(
+            Navigator.pushReplacement(context, MaterialPageRoute(
                 builder: (context) => const HomePage()));
           } else if (state is FailureState) {
             ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.error)));
+                SnackBar(backgroundColor: Colors.redAccent, content: Text(state.error)));
           }
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.login, size: 100),
-              const SizedBox(height: 30),
-              MyTextField(hText: "Email", controller: emailController,
-                obscureText:false ,),
-              const SizedBox(height: 12),
-              MyTextField(hText: "Password", controller: passwordController,
-                obscureText: false,),
-              const SizedBox(height: 18),
-              GestureDetector(
-                onTap: () {
-                  context.read<AuthCubit>().login(
-                      emailController.text.trim(),
-                      passwordController.text.trim());
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.black,
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  width: double.infinity,
-                  child: const Text(
-                    "Login",
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("New member?"),
-                  GestureDetector(
-                    onTap: onTap,
-                    child: const Text(
-                      " Register now",
-                      style: TextStyle(color: Colors.blue),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-
-
-
-
-
-
-
-
-/*class LoginPage extends StatelessWidget {
-  final void Function()? onTap;
-  const LoginPage({super.key, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final TextEditingController emailController=TextEditingController();
-    final TextEditingController passwordController=TextEditingController();
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Center(child: Text("Login Page")),
-      ),
-        body:BlocListener<AuthCubit,AuthState>(listener: (context,state){
-          if(state is AuthenticatedState){
-            Navigator.push(context, MaterialPageRoute(
-                builder: (context)=> const HomePage()));
-          }else if(state is FailureState){
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.error)));
-          }
-        },
-        child: Column(
-          children: [
-          const Icon(Icons.login,size: 100,),
-      const SizedBox(height:30),
-      MyTextField(hText: "email", controller: emailController)  ,
-      const SizedBox(height:12),
-      MyTextField(hText: "password", controller: passwordController),
-      const SizedBox(height:18),
-      GestureDetector(
-        onTap: (){
-          context.read<AuthCubit>().login(emailController.text.trim(),
-              passwordController.text.trim());
         },
         child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color:Colors.black,
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            // Optional: Add a very soft gradient for Web aesthetic
+            gradient: LinearGradient(
+              colors: [Color(0xFFE0EAFC), Color(0xFFCFDEF3)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
-          child: const Text("Login",style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold,
-              color: Colors.white),
+          child: Center(
+            child: SingleChildScrollView(
+              child: Container(
+                // Max width for Web (so it stays a card), 100% for Mobile
+                constraints: const BoxConstraints(maxWidth: 450),
+                margin: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.all(32),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.8), // Transparent effect
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: Colors.white.withOpacity(0.5)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    )
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min, // Wrap content
+                  children: [
+                    // --- Header ---
+                    const Icon(Icons.chat_bubble_rounded, size: 70, color: Colors.blue),
+                    const SizedBox(height: 16),
+                    const Text("Welcome Back",
+                        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black87)),
+                    const Text("Sign in to continue",
+                        style: TextStyle(fontSize: 14, color: Colors.grey)),
+                    const SizedBox(height: 32),
+
+                    // --- Input Fields ---
+                    MyTextField(
+                      hText: "Email",
+                      controller: emailController,
+                      obscureText: false,
+                    ),
+                    const SizedBox(height: 16),
+                    MyTextField(
+                      hText: "Password",
+                      controller: passwordController,
+                      obscureText: true, // Should be true for passwords
+                    ),
+                    const SizedBox(height: 10),
+
+                    // --- Forgot Password (Optional UI Polish) ---
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text("Forgot Password?",
+                          style: TextStyle(color: Colors.blue.shade700, fontSize: 13, fontWeight: FontWeight.w600)),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // --- Login Button ---
+                    GestureDetector(
+                      onTap: () {
+                        context.read<AuthCubit>().login(
+                            emailController.text.trim(),
+                            passwordController.text.trim());
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            gradient: const LinearGradient(colors: [Colors.blue, Color(0xFF1E88E5)]),
+                            boxShadow: [
+                              BoxShadow(color: Colors.blue.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 5))
+                            ]
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        width: double.infinity,
+                        child: const Text(
+                          "Login",
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+
+                    // --- Footer ---
+                    const SizedBox(height: 30),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text("Not a member?", style: TextStyle(color: Colors.black54)),
+                        GestureDetector(
+                          onTap: onTap,
+                          child: Text(
+                            " Register now",
+                            style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
       ),
-      Row(
-        children: [
-          const Text("New member!"),
-          GestureDetector(
-            onTap: onTap,
-            child:const Text("Register now",style: TextStyle(color: Colors.blue),),
-          ),
-        ],
-      ),
-      ],
-    ),
-        )
     );
   }
 }
-*/
