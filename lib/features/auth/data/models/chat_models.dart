@@ -5,38 +5,43 @@ class Message {
   final String id;
   final String senderId;
   final String text;
-  final Timestamp? timestamp; // Nullable to handle "Pending" state safely
+  final Timestamp timestamp;
 
   Message({
     required this.id,
     required this.senderId,
     required this.text,
-    this.timestamp,
+    required this.timestamp,
   });
 
+  /// Helper to show time in the Chat Bubble (e.g., "12:45 PM")
   String get formattedTime {
-    if (timestamp == null) return "Sending...";
-    return DateFormat('hh:mm a').format(timestamp!.toDate());
+    return DateFormat('hh:mm a').format(timestamp.toDate());
   }
 
-  // Factory to convert Firestore Document to Message Object
-  factory Message.fromDocument(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-
+  /// Factory to convert Firestore Map data into a Message Object
+  /// Use this inside your Repository when mapping snapshot.docs
+  factory Message.fromMap(Map<String, dynamic> map, String docId) {
     return Message(
-      id: doc.id,
-      senderId: data['senderId'] ?? '',
-      text: data['text'] ?? '',
-      // If the server hasn't set the time yet (local cache), this will be null
-      timestamp: data['timestamp'] as Timestamp?,
+      id: docId,
+      senderId: map['senderId'] ?? '',
+      text: map['text'] ?? '',
+      // SAFETY: If the server hasn't set the time yet (pending state),
+      // we use the current local time so the app doesn't crash.
+      timestamp: map['timestamp'] is Timestamp
+          ? map['timestamp']
+          : Timestamp.now(),
     );
   }
 
-  // Convert Message Object to Map for Firestore
+  /// Convert Message Object to Map for sending to Firestore
+  /// Use this inside your Repository's sendMessage function
   Map<String, dynamic> toMap() {
     return {
       'senderId': senderId,
       'text': text,
+      // CRITICAL: Tells Firebase to use its own global clock for ordering.
+      // This ensures messages "stay" in the same order for every user.
       'timestamp': FieldValue.serverTimestamp(),
     };
   }
