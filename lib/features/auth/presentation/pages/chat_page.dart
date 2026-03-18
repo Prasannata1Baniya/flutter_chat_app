@@ -26,10 +26,13 @@ class _ChatScreenState extends State<ChatScreen> {
   final ScrollController _scrollController = ScrollController();
   late String _currentUserId;
 
+  // Inside ChatScreen initState
   @override
   void initState() {
     super.initState();
     _currentUserId = context.read<AuthCubit>().currentUser?.uid ?? '';
+    debugPrint("DEBUG: Chatting in Room ID: ${widget.chatId}");
+    debugPrint("DEBUG: My User ID is: $_currentUserId");
   }
 
   void _sendMessage() async {

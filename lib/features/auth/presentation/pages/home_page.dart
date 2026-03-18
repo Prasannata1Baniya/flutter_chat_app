@@ -20,8 +20,13 @@ class _HomePageState extends State<HomePage> {
   List<dynamic> _allUsers = [];
   List<dynamic> _filteredUsers = [];
 
-  String generateChatId(String userId1, String userId2) =>
-      ([userId1, userId2]..sort()).join('_');
+  // Add this to your HomePage class
+  String generateChatId(String userId1, String userId2) {
+    List<String> ids = [userId1, userId2];
+    ids.sort(); // <--- THIS IS THE MOST IMPORTANT LINE
+    return ids.join('_');
+  }
+
 
   @override
   void initState() {
