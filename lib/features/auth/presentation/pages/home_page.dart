@@ -21,14 +21,11 @@ class _HomePageState extends State<HomePage> {
   List<dynamic> _filteredUsers = [];
 
 
-  // 1. Add this function inside your _HomePageState
   String generateChatId(String id1, String id2) {
     List<String> ids = [id1, id2];
-    ids.sort(); // <--- THIS IS THE MAGIC LINE
+    ids.sort();
     return ids.join('_');
   }
-
-
 
 
   @override
@@ -117,7 +114,8 @@ class _HomePageState extends State<HomePage> {
               }
             }
 
-            final currentUserId = currentUser?.uid ?? '';
+
+            final currentUserId = context.read<AuthCubit>().currentUser?.uid ?? '';
 
             return Column(
               children: [

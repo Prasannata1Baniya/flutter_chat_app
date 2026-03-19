@@ -26,13 +26,16 @@ class _ChatScreenState extends State<ChatScreen> {
   final ScrollController _scrollController = ScrollController();
   late String _currentUserId;
 
-  // Inside ChatScreen initState
+
   @override
   void initState() {
     super.initState();
     _currentUserId = context.read<AuthCubit>().currentUser?.uid ?? '';
-    debugPrint("DEBUG: Chatting in Room ID: ${widget.chatId}");
-    debugPrint("DEBUG: My User ID is: $_currentUserId");
+
+    debugPrint("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    debugPrint("MY UID: $_currentUserId");
+    debugPrint("CHAT ROOM ID: ${widget.chatId}");
+    debugPrint("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
   }
 
   void _sendMessage() async {
@@ -41,7 +44,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
     _messageController.clear();
 
-    // IMPORTANT: Log the ID to see what is happening in your console
     debugPrint("Sending message as: $_currentUserId");
 
     await FirebaseFirestore.instance
@@ -59,7 +61,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F7F9),
+      backgroundColor:  const Color(0xFFF0F2F5),
       appBar: AppBar(
         elevation: 0.5,
         backgroundColor: Colors.white,
