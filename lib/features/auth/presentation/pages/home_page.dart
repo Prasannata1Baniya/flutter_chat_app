@@ -20,12 +20,15 @@ class _HomePageState extends State<HomePage> {
   List<dynamic> _allUsers = [];
   List<dynamic> _filteredUsers = [];
 
-  // Add this to your HomePage class
-  String generateChatId(String userId1, String userId2) {
-    List<String> ids = [userId1, userId2];
-    ids.sort(); // <--- THIS IS THE MOST IMPORTANT LINE
+
+  // 1. Add this function inside your _HomePageState
+  String generateChatId(String id1, String id2) {
+    List<String> ids = [id1, id2];
+    ids.sort(); // <--- THIS IS THE MAGIC LINE
     return ids.join('_');
   }
+
+
 
 
   @override
@@ -154,18 +157,17 @@ class _HomePageState extends State<HomePage> {
                     itemBuilder: (context, index) {
                       final user = _filteredUsers[index];
                       final chatId = generateChatId(currentUserId, user.uid);
-
                       return InkWell(
                         onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ChatScreen(
-                              chatId: chatId,
-                              chatUserName: user.name ?? 'No Name',
-                              chatUserUid: user.uid,
-                            ),
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ChatScreen(
+                            chatId: chatId, // Now both users will have the SAME ID
+                            chatUserName: user.name ?? 'No Name',
+                            chatUserUid: user.uid,
                           ),
                         ),
+                      ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 12),

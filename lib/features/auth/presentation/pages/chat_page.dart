@@ -41,13 +41,15 @@ class _ChatScreenState extends State<ChatScreen> {
 
     _messageController.clear();
 
-    // Directly sending to Firestore ensures the message "stays" in the shared ChatId
+    // IMPORTANT: Log the ID to see what is happening in your console
+    debugPrint("Sending message as: $_currentUserId");
+
     await FirebaseFirestore.instance
         .collection('chats')
         .doc(widget.chatId)
         .collection('messages')
         .add({
-      'senderId': _currentUserId,
+      'senderId': _currentUserId, // Ensure this matches your Auth UID
       'receiverId': widget.chatUserUid,
       'text': text,
       'timestamp': FieldValue.serverTimestamp(),
@@ -122,8 +124,8 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+
   Widget _buildMessageBubble(String text, bool isMe, Timestamp? timestamp) {
-    // Format the time safely
     String time = '';
     if (timestamp != null) {
       time = DateFormat('hh:mm a').format(timestamp.toDate());
@@ -131,36 +133,57 @@ class _ChatScreenState extends State<ChatScreen> {
 
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Column(
-        crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: [
-          Container(
-            margin: const EdgeInsets.only(bottom: 4),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
-            decoration: BoxDecoration(
-              color: isMe ? Colors.blue : Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(20),
-                topRight: const Radius.circular(20),
-                bottomLeft: Radius.circular(isMe ? 20 : 4),
-                bottomRight: Radius.circular(isMe ? 4 : 20),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+        child: Column(
+          crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                // YOUR MESSAGES = BLUE, FRIEND MESSAGES = WHITE
+                color: isMe ? Colors.blue.shade600 : Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(18),
+                  topRight: const Radius.circular(18),
+                  bottomLeft: Radius.circular(isMe ? 18 : 0), // Tail for friend
+                  bottomRight: Radius.circular(isMe ? 0 : 18), // Tail for you
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 5,
+                    offset: const Offset(0, 2),
+                  )
+                ],
               ),
-              boxShadow: [
-                BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 5, offset: const Offset(0, 2))
-              ],
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.75,
+              ),
+              child: Column(
+                crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    text,
+                    style: TextStyle(
+                      // WHITE text on Blue, BLACK text on White
+                      color: isMe ? Colors.white : Colors.black87,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    time,
+                    style: TextStyle(
+                      color: isMe ? Colors.white70 : Colors.grey.shade500,
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            child: Text(
-              text,
-              style: TextStyle(color: isMe ? Colors.white : Colors.black87, fontSize: 16),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Text(time, style: TextStyle(color: Colors.grey.shade500, fontSize: 10)),
-          ),
-          const SizedBox(height: 8),
-        ],
+          ],
+        ),
       ),
     );
   }
