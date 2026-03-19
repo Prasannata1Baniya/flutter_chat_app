@@ -9,6 +9,18 @@ class UserEntity {
     required this.email,
   });
 
+  UserEntity copyWith({
+    String? uid,
+    String? email,
+    String? name,
+  }) {
+    return UserEntity(
+      uid: uid ?? this.uid,     // If new uid is null, use the old one
+      email: email ?? this.email,
+      name: name ?? this.name,
+    );
+  }
+
   // Converts UserEntity to JSON
   Map<String, dynamic> toJson() {
     return {

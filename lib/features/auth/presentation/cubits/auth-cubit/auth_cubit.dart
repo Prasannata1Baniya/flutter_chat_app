@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_app/features/auth/domain/repo/auth_repo.dart';
 import 'package:flutter_chat_app/features/auth/presentation/cubits/auth-cubit/auth_state.dart';
@@ -98,4 +99,27 @@ class AuthCubit extends Cubit<AuthState> {
       emit(FailureState("Error fetching users: $e"));
     }
   }
+
+   // To update or edit
+  Future<void> updateName(String newName) async {
+    try {
+      final uid = _currentUser?.uid;
+      if (uid != null) {
+        await FirebaseFirestore.instance.collection('users').doc(uid).update({
+          'name': newName,
+        });
+
+        _currentUser = _currentUser?.copyWith(name: newName);
+
+        // Emit this for the Profile Page to update
+        emit(AuthenticatedState(_currentUser!));
+
+        //call this to ensure HomePage gets its data back
+        await fetchUsersExcluding();
+      }
+    } catch (e) {
+      emit(FailureState(e.toString()));
+    }
+  }
+
 }

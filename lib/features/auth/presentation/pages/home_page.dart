@@ -13,13 +13,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // 1. Controller for the Search Bar
   final TextEditingController _searchController = TextEditingController();
-
-  // 2. Lists to hold all users and the filtered results
   List<dynamic> _allUsers = [];
   List<dynamic> _filteredUsers = [];
-
 
   String generateChatId(String id1, String id2) {
     List<String> ids = [id1, id2];
@@ -27,15 +23,12 @@ class _HomePageState extends State<HomePage> {
     return ids.join('_');
   }
 
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AuthCubit>().fetchUsersExcluding();
     });
-
-    // 3. Listen to search text changes
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -45,7 +38,6 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  // 4. Filtering Logic
   void _onSearchChanged() {
     String query = _searchController.text.toLowerCase();
     setState(() {
@@ -58,89 +50,90 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUser = context.read<AuthCubit>().currentUser;
+    // We read current user from the Cubit to ensure it updates when the name changes
+    final currentUser = context.watch<AuthCubit>().currentUser;
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
-        toolbarHeight: 80,
+        toolbarHeight: 90,
         centerTitle: false,
         leadingWidth: 75,
         leading: Padding(
           padding: const EdgeInsets.only(left: 20.0),
           child: GestureDetector(
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const ProfilePage()));
-            },
-            child: CircleAvatar(
-              radius: 25,
-              backgroundColor: Colors.blue.shade50,
-              child: Text(
-                currentUser?.name?[0].toUpperCase() ?? 'U',
-                style: const TextStyle(
-                    color: Colors.blue,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfilePage())),
+            child: Hero(
+              tag: 'profile_pic',
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.blue.shade50, width: 2),
+                ),
+                child: CircleAvatar(
+                  radius: 28,
+                  backgroundColor: Colors.blue.shade50,
+                  child: Text(
+                    currentUser?.name?[0].toUpperCase() ?? 'U',
+                    style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                ),
               ),
             ),
           ),
         ),
         title: const Text(
           "Chats",
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.w800, fontSize: 28),
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12.0),
-            child: IconButton(
-              onPressed: () => context.read<AuthCubit>().logOut(),
-              icon: Icon(Icons.logout_rounded, color: Colors.grey.shade400),
-            ),
+          IconButton(
+            onPressed: () => context.read<AuthCubit>().logOut(),
+            icon: Icon(Icons.logout_rounded, color: Colors.grey.shade400, size: 26),
           ),
+          const SizedBox(width: 10),
         ],
       ),
       body: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, state) {
+          // Update internal lists when state changes
           if (state is UsersFetchedState) {
-            // 5. Update local lists when new data arrives from Cubit
-            if (_allUsers.isEmpty || _allUsers.length != state.users.length) {
-              _allUsers = state.users;
-              if (_searchController.text.isEmpty) {
-                _filteredUsers = state.users;
-              }
+            _allUsers = state.users;
+            if (_searchController.text.isEmpty) {
+              _filteredUsers = state.users;
             }
+          }
 
-
-            final currentUserId = context.read<AuthCubit>().currentUser?.uid ?? '';
+          // CRITICAL FIX: Show the list if we have users, even if the state is "AuthenticatedState"
+          if (_allUsers.isNotEmpty) {
+            final currentUserId = currentUser?.uid ?? '';
 
             return Column(
               children: [
-                // -- Search Bar --
+                // -- Modern Search Bar --
                 Padding(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: TextField(
-                    controller: _searchController, // Attached controller
-                    decoration: InputDecoration(
-                      hintText: "Search messages...",
-                      prefixIcon: const Icon(Icons.search, size: 20),
-                      // Added a clear button when user types
-                      suffixIcon: _searchController.text.isNotEmpty
-                          ? IconButton(
-                        icon: const Icon(Icons.clear, size: 18),
-                        onPressed: () => _searchController.clear(),
-                      )
-                          : null,
-                      filled: true,
-                      fillColor: Colors.grey.shade100,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide.none,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: "Search conversations...",
+                        hintStyle: TextStyle(color: Colors.grey.shade400),
+                        prefixIcon: Icon(Icons.search, color: Colors.grey.shade400, size: 22),
+                        suffixIcon: _searchController.text.isNotEmpty
+                            ? IconButton(
+                          icon: const Icon(Icons.clear, size: 18),
+                          onPressed: () => _searchController.clear(),
+                        )
+                            : null,
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(vertical: 15),
                       ),
                     ),
                   ),
@@ -149,71 +142,58 @@ class _HomePageState extends State<HomePage> {
                 // --- Chat List ---
                 Expanded(
                   child: _filteredUsers.isEmpty
-                      ? const Center(child: Text("No users found"))
-                      : ListView.builder(
-                    itemCount: _filteredUsers.length, // Use filtered list
+                      ? _buildEmptyState()
+                      : ListView.separated(
+                    padding: const EdgeInsets.only(top: 10, bottom: 100),
+                    itemCount: _filteredUsers.length,
+                    separatorBuilder: (context, index) => const Divider(height: 1, indent: 90, endIndent: 20, color: Color(0xFFF5F5F5)),
                     itemBuilder: (context, index) {
                       final user = _filteredUsers[index];
                       final chatId = generateChatId(currentUserId, user.uid);
-                      return InkWell(
+
+                      return ListTile(
                         onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ChatScreen(
-                            chatId: chatId, // Now both users will have the SAME ID
-                            chatUserName: user.name ?? 'No Name',
-                            chatUserUid: user.uid,
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ChatScreen(
+                              chatId: chatId,
+                              chatUserName: user.name ?? 'No Name',
+                              chatUserUid: user.uid,
+                            ),
                           ),
                         ),
-                      ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 12),
-                          child: Row(
-                            children: [
-                              Hero(
-                                tag: user.uid,
-                                child: CircleAvatar(
-                                  radius: 30,
-                                  backgroundColor: Colors.blue.shade50,
-                                  child: Text(user.name?[0].toUpperCase() ?? '?',
-                                      style: const TextStyle(
-                                          color: Colors.blue,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 22)),
-                                ),
-                              ),
-                              const SizedBox(width: 15),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(user.name ?? 'No Name',
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 17)),
-                                    const SizedBox(height: 5),
-                                    Text("Tap to start chatting...",
-                                        style: TextStyle(
-                                            color: Colors.grey.shade500,
-                                            fontSize: 14),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis),
-                                  ],
-                                ),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text("12:45 PM",
-                                      style: TextStyle(
-                                          color: Colors.grey.shade400,
-                                          fontSize: 12)),
-                                  const SizedBox(height: 5),
-                                ],
-                              ),
-                            ],
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                        leading: Hero(
+                          tag: user.uid,
+                          child: CircleAvatar(
+                            radius: 30,
+                            backgroundColor: Colors.blue.shade50,
+                            child: Text(user.name?[0].toUpperCase() ?? '?',
+                                style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 20)),
                           ),
+                        ),
+                        title: Text(
+                          user.name ?? 'No Name',
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: Colors.black),
+                        ),
+                        subtitle: Padding(
+                          padding: const EdgeInsets.only(top: 4.0),
+                          child: Text(
+                            "Tap to start chatting...",
+                            style: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        trailing: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text("12:45 PM", style: TextStyle(color: Colors.grey.shade400, fontSize: 12)),
+                            const SizedBox(height: 5),
+                            // Optional: Unread badge
+                            // Container(height: 8, width: 8, decoration: BoxDecoration(color: Colors.blue, shape: BoxShape.circle))
+                          ],
                         ),
                       );
                     },
@@ -222,21 +202,42 @@ class _HomePageState extends State<HomePage> {
               ],
             );
           }
+
+          // Fallback UI for errors or initial loading
           return _buildLoadingOrError(state);
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () {},
         backgroundColor: Colors.blue,
-        child: const Icon(Icons.edit_square, color: Colors.white),
+        label: const Text("New Chat", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        icon: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.search_off_rounded, size: 80, color: Colors.grey.shade200),
+          const SizedBox(height: 10),
+          Text("No users found", style: TextStyle(color: Colors.grey.shade400, fontSize: 16)),
+        ],
       ),
     );
   }
 
   Widget _buildLoadingOrError(AuthState state) {
     if (state is FailureState) {
-      return Center(child: Text("Error: ${state.error}"));
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Text("Error: ${state.error}", textAlign: TextAlign.center, style: const TextStyle(color: Colors.red)),
+        ),
+      );
     }
-    return const Center(child: CircularProgressIndicator(color: Colors.blue));
+    return const Center(child: CircularProgressIndicator(color: Colors.blue, strokeWidth: 2));
   }
 }

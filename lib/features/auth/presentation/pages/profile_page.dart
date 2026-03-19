@@ -1,150 +1,240 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubits/auth-cubit/auth_cubit.dart';
+import '../cubits/auth-cubit/auth_state.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Safely get the current user
-    final currentUser = context.read<AuthCubit>().currentUser;
+  State<ProfilePage> createState() => _ProfilePageState();
+}
 
+class _ProfilePageState extends State<ProfilePage> {
+
+  // To show the Edit Bottom Sheet
+  void _showEditDialog(BuildContext context, String currentName) {
+    final TextEditingController nameController =
+    TextEditingController(text: currentName);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 20,
+          right: 20,
+          top: 20,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("Edit Your Name",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 15),
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.grey.shade100,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide.none,
+                ),
+                hintText: "Enter your name",
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                context.read<AuthCubit>().updateName(nameController.text);
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Profile Updated!")),
+                );
+              },
+
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 50),
+                backgroundColor: Colors.blue,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text("Save Changes",
+                  style: TextStyle(color: Colors.white)),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50], // Light professional background
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text("Profile", style: TextStyle(fontWeight: FontWeight.bold)),
+        title:
+        const Text("Profile", style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
 
-            // --- PROFILE HEADER SECTION ---
-            Center(
-              child: Stack(
-                children: [
-                  Container(
+      // 1. Wrap the content in BlocBuilder to listen for changes
+      body: BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, state) {
+          // 2. Get the latest user from the Cubit inside the builder
+          final user = context.read<AuthCubit>().currentUser;
+
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+
+                // --- PROFILE HEADER SECTION ---
+                Center(
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border:
+                          Border.all(color: Colors.blue.shade100, width: 5),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.1),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            )
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          radius: 60,
+                          backgroundColor: Colors.blue.shade500,
+                          child: Text(
+                            user?.name?[0].toUpperCase() ?? 'U',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 40,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: CircleAvatar(
+                          radius: 18,
+                          backgroundColor: Colors.blue.shade700,
+                          child: const Icon(Icons.camera_alt,
+                              color: Colors.white, size: 18),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 15),
+                Text(
+                  user?.name ?? 'No Name',
+                  style: const TextStyle(
+                      fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  "Available",
+                  style: TextStyle(
+                      color: Colors.green.shade600,
+                      fontWeight: FontWeight.w500),
+                ),
+
+                const SizedBox(height: 30),
+
+                // --- INFO CARD SECTION ---
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Container(
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.blue.shade100, width: 5),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
+                          color: Colors.black.withValues(alpha: 0.03),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
                         )
                       ],
                     ),
-                    child: CircleAvatar(
-                      radius: 60,
-                      backgroundColor: Colors.blue.shade500,
-                      child: Text(
-                        currentUser?.name?[0].toUpperCase() ?? 'U',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
+                    child: Column(
+                      children: [
+                        _buildInfoTile(Icons.person_outline, "Full Name",
+                            user?.name ?? 'Not set'),
+                        const Divider(height: 1, indent: 60),
+                        _buildInfoTile(Icons.email_outlined, "Email Address",
+                            user?.email ?? 'Not set'),
+                        const Divider(height: 1, indent: 60),
+                        _buildInfoTile(
+                            Icons.phone_outlined, "Phone", "+1 234 567 890"),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                // --- ACTIONS SECTION ---
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () =>
+                            _showEditDialog(context, user?.name ?? ''),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size(double.infinity, 55),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15)),
+                          elevation: 0,
                         ),
+                        child: const Text("Edit Profile",
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold)),
                       ),
-                    ),
+                      const SizedBox(height: 12),
+                      OutlinedButton(
+                        onPressed: () {
+                          context.read<AuthCubit>().logOut();
+                          Navigator.pop(context);
+                        },
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: Colors.red.shade300),
+                          foregroundColor: Colors.red.shade600,
+                          minimumSize: const Size(double.infinity, 55),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15)),
+                        ),
+                        child: const Text("Log Out",
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold)),
+                      ),
+                    ],
                   ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: CircleAvatar(
-                      radius: 18,
-                      backgroundColor: Colors.blue.shade700,
-                      child: const Icon(Icons.camera_alt, color: Colors.white, size: 18),
-                    ),
-                  )
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 15),
-            Text(
-              currentUser?.name ?? 'No Name',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              "Available", // Status indicator
-              style: TextStyle(color: Colors.green.shade600, fontWeight: FontWeight.w500),
-            ),
-
-            const SizedBox(height: 30),
-
-            // --- INFO CARD SECTION ---
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
-                    )
-                  ],
                 ),
-                child: Column(
-                  children: [
-                    _buildInfoTile(Icons.person_outline, "Full Name", currentUser?.name ?? 'Not set'),
-                    const Divider(height: 1, indent: 60),
-                    _buildInfoTile(Icons.email_outlined, "Email Address", currentUser?.email ?? 'Not set'),
-                    const Divider(height: 1, indent: 60),
-                    _buildInfoTile(Icons.phone_outlined, "Phone", "+1 234 567 890"),
-                  ],
-                ),
-              ),
+                const SizedBox(height: 40),
+              ],
             ),
-
-            const SizedBox(height: 30),
-
-            // --- ACTIONS SECTION ---
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      // Implement Edit Logic
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(double.infinity, 55),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                      elevation: 0,
-                    ),
-                    child: const Text("Edit Profile", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  ),
-                  const SizedBox(height: 12),
-                  OutlinedButton(
-                    onPressed: () {
-                      context.read<AuthCubit>().logOut();
-                      Navigator.pop(context); // Go back after logout
-                    },
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.red.shade300),
-                      foregroundColor: Colors.red.shade600,
-                      minimumSize: const Size(double.infinity, 55),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                    ),
-                    child: const Text("Log Out", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 40),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

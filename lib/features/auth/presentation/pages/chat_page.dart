@@ -51,7 +51,7 @@ class _ChatScreenState extends State<ChatScreen> {
         .doc(widget.chatId)
         .collection('messages')
         .add({
-      'senderId': _currentUserId, // Ensure this matches your Auth UID
+      'senderId': _currentUserId, // this should match to the Auth UID
       'receiverId': widget.chatUserUid,
       'text': text,
       'timestamp': FieldValue.serverTimestamp(),
@@ -83,7 +83,6 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              // This Stream is the SECRET. It listens for changes for BOTH users.
               stream: FirebaseFirestore.instance
                   .collection('chats')
                   .doc(widget.chatId)
