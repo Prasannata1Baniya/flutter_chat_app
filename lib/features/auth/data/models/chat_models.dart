@@ -14,7 +14,7 @@ class Message {
     required this.timestamp,
   });
 
-  /// Helper to show time in the Chat Bubble (e.g., "12:45 PM")
+  /// to show time in the Chat Bubble (e.g., "12:45 PM")
   String get formattedTime {
     return DateFormat('hh:mm a').format(timestamp.toDate());
   }

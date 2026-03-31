@@ -88,7 +88,7 @@ class LoginPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    // --- Login Button ---
+                    // Login Button
                     GestureDetector(
                       onTap: () {
                         context.read<AuthCubit>().login(
