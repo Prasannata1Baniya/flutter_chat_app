@@ -4,7 +4,6 @@ import 'package:flutter_chat_app/features/auth/domain/repo/auth_repo.dart';
 import 'package:flutter_chat_app/features/auth/presentation/cubits/auth-cubit/auth_state.dart';
 import '../../../domain/entity/user_entity.dart';
 
-
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepo authRepo;
   UserEntity? _currentUser;

@@ -113,7 +113,7 @@ class LoginPage extends StatelessWidget {
                       ),
                     ),
 
-                    // --- Footer ---
+                    // Footer
                     const SizedBox(height: 30),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
