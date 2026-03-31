@@ -14,13 +14,11 @@ class ChatRepoImpl implements ChatRepo {
         .collection('chats')
         .doc(chatID)
         .collection('messages')
-    // Order by timestamp to ensure messages stay in the correct order for all users
+    // Ordering by timestamp to ensure messages stay in the correct order for all users
         .orderBy('timestamp', descending: false)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
-        // FIX: Use 'fromMap' instead of 'fromDocument'
-        // We pass the data and the document ID separately
         return Message.fromMap(doc.data(), doc.id);
       }).toList();
     });
@@ -29,8 +27,6 @@ class ChatRepoImpl implements ChatRepo {
   @override
   Future<void> sendMessage(String chatId, Message message) async {
     try {
-      // FIX: Use the toMap() method from your model.
-      // It already contains 'FieldValue.serverTimestamp()' logic.
       final messageData = message.toMap();
 
       await _firestore

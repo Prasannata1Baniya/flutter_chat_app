@@ -40,7 +40,6 @@ class AuthRepoImpl implements AuthRepo {
         return user;
       }
     } on FirebaseAuthException catch (e) {
-      // Professional Error Handling
       String message = "An error occurred";
       if (e.code == 'email-already-in-use') message = "This email is already registered.";
       if (e.code == 'weak-password') message = "The password is too weak.";
@@ -60,7 +59,6 @@ class AuthRepoImpl implements AuthRepo {
       );
 
       if (userCredential.user != null) {
-        // ALWAYS fetch from Firestore to get the latest profile data
         return await _getUserFromFirestore(userCredential.user!.uid);
       }
     } on FirebaseAuthException catch (e) {
@@ -79,7 +77,6 @@ class AuthRepoImpl implements AuthRepo {
       User? firebaseUser = _firebaseAuth.currentUser;
       if (firebaseUser == null) return null;
 
-      // Fetch the most up-to-date name/data from Firestore
       return await _getUserFromFirestore(firebaseUser.uid);
     } catch (e) {
       debugPrint("Error fetching current user: $e");
@@ -87,7 +84,6 @@ class AuthRepoImpl implements AuthRepo {
     }
   }
 
-  // Helper method to keep code DRY (Don't Repeat Yourself)
   Future<UserEntity?> _getUserFromFirestore(String uid) async {
     final doc = await _firestore.collection('users').doc(uid).get();
     if (doc.exists && doc.data() != null) {
@@ -108,7 +104,6 @@ class AuthRepoImpl implements AuthRepo {
   @override
   Future<List<UserEntity>> fetchAllUsers() async {
     try {
-      // In a "Great" app, you might want to order users by name
       final querySnapshot = await _firestore
           .collection('users')
           .orderBy('name')

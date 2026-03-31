@@ -16,7 +16,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final user = await authRepo.loginWithEmailAndPassword(email, password);
       if (user != null) {
-        _currentUser = user;  // <--- store here
+        _currentUser = user;
         emit(AuthenticatedState(user));
       } else {
         emit(FailureState('Login failed'));
@@ -111,10 +111,8 @@ class AuthCubit extends Cubit<AuthState> {
 
         _currentUser = _currentUser?.copyWith(name: newName);
 
-        // Emit this for the Profile Page to update
         emit(AuthenticatedState(_currentUser!));
 
-        //call this to ensure HomePage gets its data back
         await fetchUsersExcluding();
       }
     } catch (e) {

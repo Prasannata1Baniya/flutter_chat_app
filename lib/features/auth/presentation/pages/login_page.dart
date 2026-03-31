@@ -30,7 +30,6 @@ class LoginPage extends StatelessWidget {
           width: double.infinity,
           height: double.infinity,
           decoration: const BoxDecoration(
-            // Optional: Add a very soft gradient for Web aesthetic
             gradient: LinearGradient(
               colors: [Color(0xFFE0EAFC), Color(0xFFCFDEF3)],
               begin: Alignment.topLeft,
@@ -40,17 +39,16 @@ class LoginPage extends StatelessWidget {
           child: Center(
             child: SingleChildScrollView(
               child: Container(
-                // Max width for Web (so it stays a card), 100% for Mobile
                 constraints: const BoxConstraints(maxWidth: 450),
                 margin: const EdgeInsets.symmetric(horizontal: 24),
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.8), // Transparent effect
+                  color: Colors.white.withValues(alpha: 0.8),
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.white.withOpacity(0.5)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.5)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     )
@@ -102,7 +100,7 @@ class LoginPage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(16),
                             gradient: const LinearGradient(colors: [Colors.blue, Color(0xFF1E88E5)]),
                             boxShadow: [
-                              BoxShadow(color: Colors.blue.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 5))
+                              BoxShadow(color: Colors.blue.withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, 5))
                             ]
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 16),

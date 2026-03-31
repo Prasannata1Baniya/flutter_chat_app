@@ -21,7 +21,7 @@ class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
    return  AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300), // Optional animation duration
+      duration: const Duration(milliseconds: 300),
       child: isLogin
           ? LoginPage(onTap: togglePage)
           : RegisterPage(onTap: togglePage),

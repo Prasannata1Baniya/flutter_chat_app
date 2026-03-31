@@ -31,11 +31,10 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     _currentUserId = context.read<AuthCubit>().currentUser?.uid ?? '';
-
-    debugPrint("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    debugPrint("!!!!!!!!!!!!!");
     debugPrint("MY UID: $_currentUserId");
     debugPrint("CHAT ROOM ID: ${widget.chatId}");
-    debugPrint("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    debugPrint("!!!!!!!!!!!!!!");
   }
 
   void _sendMessage() async {
@@ -51,7 +50,7 @@ class _ChatScreenState extends State<ChatScreen> {
         .doc(widget.chatId)
         .collection('messages')
         .add({
-      'senderId': _currentUserId, // this should match to the Auth UID
+      'senderId': _currentUserId,
       'receiverId': widget.chatUserUid,
       'text': text,
       'timestamp': FieldValue.serverTimestamp(),
@@ -87,7 +86,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   .collection('chats')
                   .doc(widget.chatId)
                   .collection('messages')
-                  .orderBy('timestamp', descending: true) // Newest at bottom
+                  .orderBy('timestamp', descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -103,7 +102,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 return ListView.builder(
                   controller: _scrollController,
                   padding: const EdgeInsets.all(20),
-                  reverse: true, // Keyboard friendly: list starts from bottom
+                  reverse: true,
                   itemCount: docs.length,
                   itemBuilder: (context, index) {
                     final data = docs[index].data() as Map<String, dynamic>;
@@ -141,13 +140,12 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Container(
               decoration: BoxDecoration(
-                // YOUR MESSAGES = BLUE, FRIEND MESSAGES = WHITE
                 color: isMe ? Colors.blue.shade600 : Colors.white,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(18),
                   topRight: const Radius.circular(18),
-                  bottomLeft: Radius.circular(isMe ? 18 : 0), // Tail for friend
-                  bottomRight: Radius.circular(isMe ? 0 : 18), // Tail for you
+                  bottomLeft: Radius.circular(isMe ? 18 : 0),
+                  bottomRight: Radius.circular(isMe ? 0 : 18),
                 ),
                 boxShadow: [
                   BoxShadow(

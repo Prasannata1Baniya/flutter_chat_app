@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // We read current user from the Cubit to ensure it updates when the name changes
+
     final currentUser = context.watch<AuthCubit>().currentUser;
 
     return Scaffold(
@@ -98,7 +98,6 @@ class _HomePageState extends State<HomePage> {
       ),
       body: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, state) {
-          // Update internal lists when state changes
           if (state is UsersFetchedState) {
             _allUsers = state.users;
             if (_searchController.text.isEmpty) {
@@ -106,13 +105,12 @@ class _HomePageState extends State<HomePage> {
             }
           }
 
-          // CRITICAL FIX: Show the list if we have users, even if the state is "AuthenticatedState"
           if (_allUsers.isNotEmpty) {
             final currentUserId = currentUser?.uid ?? '';
 
             return Column(
               children: [
-                // -- Modern Search Bar --
+
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Container(
@@ -139,7 +137,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
 
-                // --- Chat List ---
+                //Chat List
                 Expanded(
                   child: _filteredUsers.isEmpty
                       ? _buildEmptyState()
@@ -191,8 +189,6 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             Text("12:45 PM", style: TextStyle(color: Colors.grey.shade400, fontSize: 12)),
                             const SizedBox(height: 5),
-                            // Optional: Unread badge
-                            // Container(height: 8, width: 8, decoration: BoxDecoration(color: Colors.blue, shape: BoxShape.circle))
                           ],
                         ),
                       );
@@ -203,7 +199,6 @@ class _HomePageState extends State<HomePage> {
             );
           }
 
-          // Fallback UI for errors or initial loading
           return _buildLoadingOrError(state);
         },
       ),

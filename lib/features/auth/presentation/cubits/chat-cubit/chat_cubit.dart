@@ -11,9 +11,8 @@ class ChatCubit extends Cubit<ChatState> {
 
   ChatCubit(this._chatRepo) : super(ChatInitial());
 
-  // --- FETCH MESSAGES ---
+  //Fetch MESSAGES
   Future<void> fetchMessage(String chatID) async {
-    // Only show loading if we aren't already listening to a stream
     if (state is! ChatLoaded) emit(ChatLoading());
 
     try {
@@ -32,33 +31,27 @@ class ChatCubit extends Cubit<ChatState> {
     }
   }
 
-  // --- SEND MESSAGE ---
+  // Send MESSAGE
   Future<void> sendMessage(String text, String chatId, String senderId) async {
     try {
-      // 1. Create a temporary local message for the UI
       final newMessage = Message(
-        id: DateTime.now().millisecondsSinceEpoch.toString(), // Temp ID
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
         senderId: senderId,
         text: text,
-        timestamp: Timestamp.now(), // Local time for instant preview
+        timestamp: Timestamp.now(),
       );
 
-      // 2. OPTIONAL: If you want 'Optimistic UI', you could manually
-      // emit a ChatLoaded state with the new message added here.
-      // But for this demo, let's keep it simple and rely on the Stream.
-
-      // 3. Send to Repo
       await _chatRepo.sendMessage(chatId, newMessage);
 
     } catch (e) {
-      // If sending fails, we alert the UI
+      // If sending fails, alerting the UI
       emit(ChatError("Failed to send: ${e.toString()}"));
     }
   }
 
   @override
   Future<void> close() {
-    _messageSubscription?.cancel(); // Critical for preventing memory leaks
+    _messageSubscription?.cancel(); //for preventing memory leaks
     return super.close();
   }
 }

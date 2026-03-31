@@ -12,7 +12,6 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
 
-  // To show the Edit Bottom Sheet
   void _showEditDialog(BuildContext context, String currentName) {
     final TextEditingController nameController =
     TextEditingController(text: currentName);
@@ -88,18 +87,14 @@ class _ProfilePageState extends State<ProfilePage> {
         elevation: 0,
       ),
 
-      // 1. Wrap the content in BlocBuilder to listen for changes
       body: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, state) {
-          // 2. Get the latest user from the Cubit inside the builder
           final user = context.read<AuthCubit>().currentUser;
 
           return SingleChildScrollView(
             child: Column(
               children: [
                 const SizedBox(height: 20),
-
-                // --- PROFILE HEADER SECTION ---
                 Center(
                   child: Stack(
                     children: [
@@ -158,76 +153,85 @@ class _ProfilePageState extends State<ProfilePage> {
 
                 const SizedBox(height: 30),
 
-                // --- INFO CARD SECTION ---
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.03),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        )
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        _buildInfoTile(Icons.person_outline, "Full Name",
-                            user?.name ?? 'Not set'),
-                        const Divider(height: 1, indent: 60),
-                        _buildInfoTile(Icons.email_outlined, "Email Address",
-                            user?.email ?? 'Not set'),
-                        const Divider(height: 1, indent: 60),
-                        _buildInfoTile(
-                            Icons.phone_outlined, "Phone", "+1 234 567 890"),
-                      ],
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 500),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.03),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            )
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            _buildInfoTile(Icons.person_outline, "Full Name",
+                                user?.name ?? 'Not set'),
+                            const Divider(height: 1, indent: 60),
+                            _buildInfoTile(Icons.email_outlined, "Email Address",
+                                user?.email ?? 'Not set'),
+                            const Divider(height: 1, indent: 60),
+                            _buildInfoTile(
+                                Icons.phone_outlined, "Phone", "+1 234 567 890"),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
 
                 const SizedBox(height: 30),
 
-                // --- ACTIONS SECTION ---
+
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () =>
-                            _showEditDialog(context, user?.name ?? ''),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
-                          minimumSize: const Size(double.infinity, 55),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15)),
-                          elevation: 0,
-                        ),
-                        child: const Text("Edit Profile",
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold)),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 400),
+                      child: Column(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () =>
+                                _showEditDialog(context, user?.name ?? ''),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                              minimumSize: const Size(double.infinity, 55),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15)),
+                              elevation: 0,
+                            ),
+                            child: const Text("Edit Profile",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                          ),
+                          const SizedBox(height: 12),
+                          OutlinedButton(
+                            onPressed: () {
+                              context.read<AuthCubit>().logOut();
+                              Navigator.pop(context);
+                            },
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: Colors.red.shade300),
+                              foregroundColor: Colors.red.shade600,
+                              minimumSize: const Size(double.infinity, 55),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15)),
+                            ),
+                            child: const Text("Log Out",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 12),
-                      OutlinedButton(
-                        onPressed: () {
-                          context.read<AuthCubit>().logOut();
-                          Navigator.pop(context);
-                        },
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: Colors.red.shade300),
-                          foregroundColor: Colors.red.shade600,
-                          minimumSize: const Size(double.infinity, 55),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15)),
-                        ),
-                        child: const Text("Log Out",
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold)),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -239,7 +243,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // Helper method to build info rows
   Widget _buildInfoTile(IconData icon, String label, String value) {
     return ListTile(
       leading: Container(

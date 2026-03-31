@@ -15,7 +15,7 @@ class UserEntity {
     String? name,
   }) {
     return UserEntity(
-      uid: uid ?? this.uid,     // If new uid is null, use the old one
+      uid: uid ?? this.uid,
       email: email ?? this.email,
       name: name ?? this.name,
     );
