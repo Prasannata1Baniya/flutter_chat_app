@@ -122,6 +122,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+
                         ),
                       ),
                       Positioned(
