@@ -148,7 +148,8 @@ class _HomePageState extends State<HomePage> {
                       : ListView.separated(
                     padding: const EdgeInsets.only(top: 10, bottom: 100),
                     itemCount: _filteredUsers.length,
-                    separatorBuilder: (context, index) => const Divider(height: 1, indent: 90, endIndent: 20, color: Color(0xFFF5F5F5)),
+                    separatorBuilder: (context, index) => const Divider(height: 1, indent: 90, endIndent: 20,
+                        color: Color(0xFFF5F5F5),thickness: 1,),
                     itemBuilder: (context, index) {
                       final user = _filteredUsers[index];
                       final chatId = generateChatId(currentUserId, user.uid);
