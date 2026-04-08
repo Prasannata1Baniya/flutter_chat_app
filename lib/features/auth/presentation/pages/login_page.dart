@@ -7,7 +7,9 @@ import 'home_page.dart';
 
 class LoginPage extends StatelessWidget {
   final void Function()? onTap;
-  const LoginPage({super.key, required this.onTap});
+  LoginPage({super.key, required this.onTap});
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -54,81 +56,118 @@ class LoginPage extends StatelessWidget {
                     )
                   ],
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min, // Wrap content
-                  children: [
-                    // --- Header ---
-                    const Icon(Icons.chat_bubble_rounded, size: 70, color: Colors.blue),
-                    const SizedBox(height: 16),
-                    const Text("Welcome Back",
-                        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black87)),
-                    const Text("Sign in to continue",
-                        style: TextStyle(fontSize: 14, color: Colors.grey)),
-                    const SizedBox(height: 32),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.chat_bubble_rounded, size: 70, color: Colors.blue),
+                      const SizedBox(height: 16),
+                      const Text("Welcome Back",
+                          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black87)),
+                      const Text("Sign in to continue",
+                          style: TextStyle(fontSize: 14, color: Colors.grey)),
+                      const SizedBox(height: 32),
 
-                    // --- Input Fields ---
-                    MyTextField(
-                      hText: "Email",
-                      controller: emailController,
-                      obscureText: false,
-                    ),
-                    const SizedBox(height: 16),
-                    MyTextField(
-                      hText: "Password",
-                      controller: passwordController,
-                      obscureText: true, // Should be true for passwords
-                    ),
-                    const SizedBox(height: 10),
 
-                    // --- Forgot Password (Optional UI Polish) ---
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text("Forgot Password?",
-                          style: TextStyle(color: Colors.blue.shade700, fontSize: 13, fontWeight: FontWeight.w600)),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Login Button
-                    GestureDetector(
-                      onTap: () {
-                        context.read<AuthCubit>().login(
-                            emailController.text.trim(),
-                            passwordController.text.trim());
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            gradient: const LinearGradient(colors: [Colors.blue, Color(0xFF1E88E5)]),
-                            boxShadow: [
-                              BoxShadow(color: Colors.blue.withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, 5))
-                            ]
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        width: double.infinity,
-                        child: const Text(
-                          "Login",
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-                          textAlign: TextAlign.center,
-                        ),
+                      // Email
+                      MyTextField(hText: "Email",
+                          controller: emailController,
+                          obscureText: false,
+                       validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email';
+                          }
+                          if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                            return 'Enter a valid email address';
+                          }
+                          return null;
+                        },
+                          icon: const Icon(Icons.email_outlined),
                       ),
-                    ),
+                      const SizedBox(height: 16),
 
-                    // Footer
-                    const SizedBox(height: 30),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text("Not a member?", style: TextStyle(color: Colors.black54)),
-                        GestureDetector(
-                          onTap: onTap,
-                          child: Text(
-                            " Register now",
-                            style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.bold),
+                      // Password
+                     MyTextField(hText: 'Password',
+                         controller: passwordController,
+                         obscureText: true,
+                         validator: (value) {
+                           if (value == null || value.isEmpty) {
+                             return 'Please enter your password';
+                           }
+                           if (value.length < 6) {
+                             return 'Password must be at least 6 characters';
+                           }
+                           return null;
+                         },
+                         icon:const Icon(Icons.lock_outline),
+                     ),
+                      const SizedBox(height: 10),
+
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text("Forgot Password?",
+                            style: TextStyle(color: Colors.blue.shade700, fontSize: 13, fontWeight: FontWeight.w600)),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Login Button
+                      GestureDetector(
+                        onTap: () {
+                          if (_formKey.currentState!.validate()) {
+                            context.read<AuthCubit>().login(
+                                emailController.text.trim(),
+                                passwordController.text.trim());
+                          }
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              gradient: const LinearGradient(colors: [Colors.blue, Color(0xFF1E88E5)]),
+                              boxShadow: [
+                                BoxShadow(color: Colors.blue.withValues(alpha: 0.3),
+                                    blurRadius: 10, offset: const Offset(0, 5))
+                              ]
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          width: double.infinity,
+                          child: BlocBuilder<AuthCubit,AuthState>(
+                              builder: (context, state) {
+                                // 4. Show loading indicator if state is Loading
+                                if (state is LoadingState) {
+                                  return const Center(
+                                      child: CircularProgressIndicator(
+                                          color: Colors.white));
+                                }
+                                return const Text(
+                                  "Login",
+                                  style: TextStyle(fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                  textAlign: TextAlign.center,
+                                );
+                              }
                           ),
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+
+                      // Footer
+                      const SizedBox(height: 30),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text("Not a member?", style: TextStyle(color: Colors.black54)),
+                          GestureDetector(
+                            onTap: onTap,
+                            child: Text(
+                              " Register now",
+                              style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

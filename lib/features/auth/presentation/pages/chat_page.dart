@@ -63,8 +63,8 @@ class _ChatScreenState extends State<ChatScreen> {
       backgroundColor:  const Color(0xFFF0F2F5),
       appBar: AppBar(
         elevation: 0.5,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
         title: Row(
           children: [
             CircleAvatar(

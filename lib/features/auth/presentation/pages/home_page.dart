@@ -57,7 +57,8 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
         toolbarHeight: 90,
         centerTitle: false,
         leadingWidth: 75,
@@ -86,12 +87,12 @@ class _HomePageState extends State<HomePage> {
         ),
         title: const Text(
           "Chats",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1),
         ),
         actions: [
           IconButton(
             onPressed: () => context.read<AuthCubit>().logOut(),
-            icon: Icon(Icons.logout_rounded, color: Colors.grey.shade400, size: 26),
+            icon:const Icon(Icons.logout_rounded, color: Colors.white, size: 26),
           ),
           const SizedBox(width: 10),
         ],
@@ -121,9 +122,12 @@ class _HomePageState extends State<HomePage> {
                     child: TextField(
                       controller: _searchController,
                       decoration: InputDecoration(
+                        focusedBorder:const OutlineInputBorder(
+                          borderSide: BorderSide(width: 1,color: Colors.lightBlue),
+                        ),
                         hintText: "Search conversations...",
-                        hintStyle: TextStyle(color: Colors.grey.shade400),
-                        prefixIcon: Icon(Icons.search, color: Colors.grey.shade400, size: 22),
+                        hintStyle: TextStyle(color: Colors.grey.shade500),
+                        prefixIcon: const Icon(Icons.search, color: Colors.black, size: 22),
                         suffixIcon: _searchController.text.isNotEmpty
                             ? IconButton(
                           icon: const Icon(Icons.clear, size: 18),
