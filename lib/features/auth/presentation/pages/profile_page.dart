@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../cubits/auth-cubit/auth_cubit.dart';
 import '../cubits/auth-cubit/auth_state.dart';
+import 'dart:typed_data';
+import 'dart:convert';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -11,6 +15,55 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+
+  Uint8List? _webImage;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedImage();
+  }
+
+  // 1. Load the image from browser storage on startup
+  Future<void> _loadSavedImage() async {
+    final user = context.read<AuthCubit>().currentUser;
+    if (user == null) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    final String? base64String = prefs.getString('profile_image_${user.uid}');
+
+    if (base64String != null) {
+      setState(() {
+        _webImage = base64Decode(base64String);
+      });
+    }
+  }
+
+  // 2. Pick and Save locally
+  Future<void> _pickImage() async {
+    final user = context.read<AuthCubit>().currentUser;
+    if (user == null) return;
+
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 500,
+      imageQuality: 50,
+    );
+
+    if (image != null) {
+      final Uint8List bytes = await image.readAsBytes();
+      final prefs = await SharedPreferences.getInstance();
+
+      // CHANGE: Use the UID in the key
+      String base64String = base64Encode(bytes);
+      await prefs.setString('profile_image_${user.uid}', base64String);
+
+      setState(() {
+        _webImage = bytes;
+      });
+    }
+  }
 
   void _showEditDialog(BuildContext context, String currentName) {
     final TextEditingController nameController =
@@ -111,28 +164,41 @@ class _ProfilePageState extends State<ProfilePage> {
                             )
                           ],
                         ),
-                        child: CircleAvatar(
-                          radius: 60,
-                          backgroundColor: Colors.blue.shade500,
-                          child: Text(
-                            user?.name?[0].toUpperCase() ?? 'U',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 40,
-                              fontWeight: FontWeight.bold,
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: InkWell(
+                            customBorder: const CircleBorder(),
+                            onTap: ()=> _pickImage(),
+                            child: CircleAvatar(
+                              radius: 60,
+                              backgroundColor: Colors.blue.shade500,
+                              backgroundImage: _webImage != null
+                                  ? MemoryImage(_webImage!)
+                                  : null,
+                              child: _webImage == null
+                                  ? Text(
+                                user?.name?[0].toUpperCase() ?? 'U',
+                                style: const TextStyle(color: Colors.white, fontSize: 40),
+                              )
+                                  : null,
                             ),
                           ),
-
                         ),
                       ),
                       Positioned(
                         bottom: 0,
                         right: 0,
-                        child: CircleAvatar(
-                          radius: 18,
-                          backgroundColor: Colors.blue.shade700,
-                          child: const Icon(Icons.camera_alt,
-                              color: Colors.white, size: 18),
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: _pickImage,
+                            child: CircleAvatar(
+                              radius: 18,
+                              backgroundColor: Colors.blue.shade700,
+                              child: const Icon(Icons.camera_alt,
+                                  color: Colors.white, size: 18),
+                            ),
+                          ),
                         ),
                       )
                     ],
