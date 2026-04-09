@@ -24,7 +24,7 @@ class _ProfilePageState extends State<ProfilePage> {
     _loadSavedImage();
   }
 
-  // 1. Load the image from browser storage on startup
+  //  Load the image from browser storage on startup
   Future<void> _loadSavedImage() async {
     final user = context.read<AuthCubit>().currentUser;
     if (user == null) return;
@@ -39,7 +39,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  // 2. Pick and Save locally
+  //  Pick and Save locally
   Future<void> _pickImage() async {
     final user = context.read<AuthCubit>().currentUser;
     if (user == null) return;
@@ -55,7 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
       final Uint8List bytes = await image.readAsBytes();
       final prefs = await SharedPreferences.getInstance();
 
-      // CHANGE: Use the UID in the key
+      // Use the UID in the key
       String base64String = base64Encode(bytes);
       await prefs.setString('profile_image_${user.uid}', base64String);
 
