@@ -5,16 +5,16 @@ class MyTextField extends StatelessWidget {
   final TextEditingController controller;
   final bool obscureText;
   final FormFieldValidator<String>? validator;
-  final Icon icon;
+  final Widget? icon;
   const MyTextField({super.key, required this.hText, required this.controller,
-    this.obscureText =false, required this.validator, required this.icon,
+    this.obscureText =false, required this.validator, this.icon,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
-      obscureText: obscureText ?? false,
+      obscureText: obscureText ,
       validator: validator,
       decoration: InputDecoration(
         suffixIcon: icon,
@@ -29,15 +29,15 @@ class MyTextField extends StatelessWidget {
           borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: Colors.blue),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(25),
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Colors.red),
         ),
         focusedErrorBorder:OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: Colors.red, width: 3,),
         ),
       ),

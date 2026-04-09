@@ -5,16 +5,36 @@ import '../cubits/auth-cubit/auth_state.dart';
 import '../widgets/my_text_field.dart';
 import 'home_page.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   final void Function()? onTap;
-  LoginPage({super.key, required this.onTap});
-
-  final _formKey = GlobalKey<FormState>();
+  const LoginPage({super.key, required this.onTap});
 
   @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
+  bool isObscured = true;
+
+   late final TextEditingController emailController ;
+  late final TextEditingController passwordController;
+
+  @override
+  void initState() {
+    super.initState();
+    emailController = TextEditingController();
+    passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+  @override
   Widget build(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
 
     return Scaffold(
       backgroundColor: const Color(0xFFF3F4F6),
@@ -90,7 +110,7 @@ class LoginPage extends StatelessWidget {
                       // Password
                      MyTextField(hText: 'Password',
                          controller: passwordController,
-                         obscureText: true,
+                         obscureText: isObscured,
                          validator: (value) {
                            if (value == null || value.isEmpty) {
                              return 'Please enter your password';
@@ -100,7 +120,14 @@ class LoginPage extends StatelessWidget {
                            }
                            return null;
                          },
-                         icon:const Icon(Icons.lock_outline),
+                         icon: IconButton(
+                           onPressed: () =>
+                               setState(() =>
+                               isObscured =
+                               !isObscured),
+                           icon: isObscured ? const  Icon(Icons.visibility_off_rounded) : const  Icon(Icons.visibility),
+                         ),
+
                      ),
                       const SizedBox(height: 10),
 
@@ -158,7 +185,7 @@ class LoginPage extends StatelessWidget {
                         children: [
                           const Text("Not a member?", style: TextStyle(color: Colors.black54)),
                           GestureDetector(
-                            onTap: onTap,
+                            onTap: widget.onTap,
                             child: Text(
                               " Register now",
                               style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.bold),

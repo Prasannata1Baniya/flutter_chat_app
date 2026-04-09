@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_app/features/auth/presentation/pages/profile_page.dart';
@@ -87,14 +88,38 @@ class _HomePageState extends State<HomePage> {
         ),
         title: const Text(
           "Chats",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 28, letterSpacing: -0.5),
         ),
         actions: [
-          IconButton(
-            onPressed: () => context.read<AuthCubit>().logOut(),
-            icon:const Icon(Icons.logout_rounded, color: Colors.white, size: 26),
+          Container(
+            margin: const EdgeInsets.only(right: 15),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              onPressed: (){
+                showDialog(context: context, builder: (context){
+                  return AlertDialog(
+                    title:const Text('Log out'),
+                    content:  const Text('Are you sure you want to log out'),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+                      TextButton(
+                        onPressed: () async {
+                          Navigator.pop(context);
+                          await context.read<AuthCubit>().logOut();
+                        },
+                        child: const Text("Logout", style: TextStyle(color: Colors.red)),
+                      ),
+                      ],
+                  );
+                });
+              },
+             // onPressed: () => context.read<AuthCubit>().logOut(),
+              icon: const Icon(Icons.logout_rounded, color: Colors.black54, size: 22),
+            ),
           ),
-          const SizedBox(width: 10),
         ],
       ),
       body: BlocBuilder<AuthCubit, AuthState>(
@@ -107,13 +132,12 @@ class _HomePageState extends State<HomePage> {
           }
 
           if (_allUsers.isNotEmpty) {
-            final currentUserId = currentUser?.uid ?? '';
-
+           // final currentUserId = currentUser?.uid ?? '';
             return Column(
               children: [
-
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  //padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.grey.shade100,
@@ -122,12 +146,15 @@ class _HomePageState extends State<HomePage> {
                     child: TextField(
                       controller: _searchController,
                       decoration: InputDecoration(
-                        focusedBorder:const OutlineInputBorder(
-                          borderSide: BorderSide(width: 1,color: Colors.lightBlue),
+                        focusedBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                              width: 1, color: Colors.lightBlue),
                         ),
                         hintText: "Search conversations...",
-                        hintStyle: TextStyle(color: Colors.grey.shade500),
-                        prefixIcon: const Icon(Icons.search, color: Colors.black, size: 22),
+                        hintStyle: TextStyle(color: Colors.grey.shade500,
+                            fontSize: 15),
+                        prefixIcon: Icon(Icons.search_rounded, color: Colors
+                            .grey.shade600, size: 22),
                         suffixIcon: _searchController.text.isNotEmpty
                             ? IconButton(
                           icon: const Icon(Icons.clear, size: 18),
@@ -135,14 +162,15 @@ class _HomePageState extends State<HomePage> {
                         )
                             : null,
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 15),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 15),
                       ),
                     ),
                   ),
                 ),
 
                 //Chat List
-                Expanded(
+                /*Expanded(
                   child: _filteredUsers.isEmpty
                       ? _buildEmptyState()
                       : ListView.separated(
@@ -199,14 +227,97 @@ class _HomePageState extends State<HomePage> {
                       );
                     },
                   ),
+                ),*/
+
+                Expanded(
+                  child: _filteredUsers.isEmpty
+                      ? _buildEmptyState()
+                      : ListView
+                      .builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    itemCount: _filteredUsers.length,
+                    itemBuilder: (context, index) {
+                      final user = _filteredUsers[index];
+                      final currentUserId = currentUser?.uid ?? '';
+                      final chatId = generateChatId(currentUserId, user.uid);
+
+                      return Container(
+                        margin: const EdgeInsets.symmetric(vertical: 7),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: ListTile(
+                          onTap: () =>
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      ChatScreen(
+                                        chatId: chatId,
+                                        chatUserName: user.name ?? 'No Name',
+                                        chatUserUid: user.uid,
+                                      ),
+                                ),
+                              ),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 8),
+                          leading: Stack(
+                            children: [
+                              Hero(
+                                tag: user.uid,
+                                child: CircleAvatar(
+                                  radius: 28,
+                                  backgroundColor: Colors.blue.shade50,
+                                  child: Text(
+                                    user.name?[0].toUpperCase() ?? '?',
+                                    style: const TextStyle(color: Colors.blue,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20),
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Container(
+                                  width: 14,
+                                  height: 14,
+                                  decoration: BoxDecoration(
+                                    color: Colors.green,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                        color: Colors.white, width: 2),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          title: Text(
+                            user.name ?? 'No Name',
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                          subtitle: Text(
+                            "Tap to chat",
+                            style: TextStyle(
+                                color: Colors.grey.shade400, fontSize: 13),
+                          ),
+                          trailing: const Icon(
+                              Icons.arrow_forward_ios_rounded, size: 14,
+                              color: Colors.grey),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ],
             );
           }
-
-          return _buildLoadingOrError(state);
-        },
+            return _buildLoadingOrError(state);
+          }
       ),
+
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {},
         backgroundColor: Colors.blue,
@@ -215,6 +326,7 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
 
   Widget _buildEmptyState() {
     return Center(

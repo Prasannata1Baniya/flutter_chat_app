@@ -21,6 +21,8 @@ class _RegisterPageState extends State<RegisterPage> {
   late final TextEditingController emailController;
   late final TextEditingController passwordController;
 
+  bool isPasswordObscured = true;
+
   @override
   void initState() {
     super.initState();
@@ -135,7 +137,13 @@ class _RegisterPageState extends State<RegisterPage> {
                         validator: (value) =>   (value == null || value.length < 6)
                             ? 'Short password'
                             : null, 
-                        icon: const Icon(Icons.password),
+                        icon: IconButton(onPressed: (){
+                          setState(() {
+                            isPasswordObscured = !isPasswordObscured;
+                          });
+                        }, icon: isPasswordObscured ? const Icon(Icons.visibility_off_rounded)
+                            :const Icon(Icons.visibility)
+                        ),
                       ),
                       const SizedBox(height: 32),
 
