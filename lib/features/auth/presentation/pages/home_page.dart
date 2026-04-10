@@ -1,10 +1,10 @@
 
 import 'dart:convert';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_app/features/auth/presentation/pages/profile_page.dart';
+import 'package:flutter_chat_app/features/auth/presentation/pages/search_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../cubits/auth-cubit/auth_cubit.dart';
 import '../cubits/auth-cubit/auth_state.dart';
@@ -30,8 +30,6 @@ class _HomePageState extends State<HomePage> {
 
   Uint8List? _profileImageBytes;
 
-
-
   Future<void> _loadCurrentUserData() async {
     final user = context.read<AuthCubit>().currentUser;
     if (user == null) return;
@@ -42,11 +40,11 @@ class _HomePageState extends State<HomePage> {
 
     if (base64String != null) {
       setState(() {
-        // Make sure you are updating the same variable used in your build method
         _profileImageBytes = base64Decode(base64String);
       });
     }
   }
+
 
   @override
   void initState() {
@@ -57,6 +55,7 @@ class _HomePageState extends State<HomePage> {
       _loadCurrentUserData();
     });
     _searchController.addListener(_onSearchChanged);
+    //_searchController.addListener(() =>setState(() {}));
   }
 
   @override
@@ -81,7 +80,7 @@ class _HomePageState extends State<HomePage> {
     final currentUser = context.watch<AuthCubit>().currentUser;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.blue.shade50,
       body: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, state) {
           if (state is UsersFetchedState) {
@@ -118,7 +117,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                             child: CircleAvatar(
                               radius: 28,
-                              backgroundColor: Colors.blue.shade50,
+                              backgroundColor: Colors.blue,
                               // ADD THIS LINE:
                               backgroundImage: _profileImageBytes != null
                                   ? MemoryImage(_profileImageBytes!)
@@ -127,7 +126,7 @@ class _HomePageState extends State<HomePage> {
                                   ? Text(
                                 currentUser?.name?[0].toUpperCase() ?? 'U',
                                 style: const TextStyle(
-                                    color: Colors.blue,
+                                    color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20
                                 ),
@@ -141,52 +140,13 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(width: 12),
                     const Text(
                       "Chats",
-                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900, fontSize: 28, letterSpacing: -0.5),
+                      style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.w900, fontSize: 28, letterSpacing: -0.5),
                     ),
                     const Spacer(),
-                       Padding(
-                        //padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                        padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-                        child: Card(
-                          elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: SizedBox(
-                            width: 500,
-                            height: 42,
-                            child: TextField(
-                              controller: _searchController,
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: Colors.grey.shade100,
-                                contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                                focusedBorder:  OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(50),
-                                  borderSide: const BorderSide(
-                                      width: 1, color: Colors.lightBlue),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(50),
-                                borderSide: BorderSide(color: Colors.grey.shade200),
-                                 ),
-                                hintText: "Search friends...",
-                                hintStyle: TextStyle(color: Colors.grey.shade500,
-                                    fontSize: 15),
-                                prefixIcon: Icon(Icons.search_rounded, color: Colors
-                                    .grey.shade600, size: 22),
-                                suffixIcon: _searchController.text.isNotEmpty
-                                    ? IconButton(
-                                  icon: const Icon(Icons.clear, size: 18),
-                                  onPressed: () => _searchController.clear(),
-                                )
-                                    : null,
-                                border: InputBorder.none,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+
+                    //Searchbar
+                    CustomSearchBar(searchController: _searchController),
+
                     const Spacer(),
 
                     //Log out
@@ -222,66 +182,6 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
 
-                //Chat List
-                /*Expanded(
-                  child: _filteredUsers.isEmpty
-                      ? _buildEmptyState()
-                      : ListView.separated(
-                    padding: const EdgeInsets.only(top: 10, bottom: 100),
-                    itemCount: _filteredUsers.length,
-                    separatorBuilder: (context, index) => const Divider(height: 1, indent: 90, endIndent: 20,
-                        color: Color(0xFFF5F5F5),thickness: 1,),
-                    itemBuilder: (context, index) {
-                      final user = _filteredUsers[index];
-                      final chatId = generateChatId(currentUserId, user.uid);
-
-                      return ListTile(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ChatScreen(
-                              chatId: chatId,
-                              chatUserName: user.name ?? 'No Name',
-                              chatUserUid: user.uid,
-                            ),
-                          ),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                        leading: Hero(
-                          tag: user.uid,
-                          child: CircleAvatar(
-                            radius: 30,
-                            backgroundColor: Colors.blue.shade50,
-                            child: Text(user.name?[0].toUpperCase() ?? '?',
-                                style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 20)),
-                          ),
-                        ),
-                        title: Text(
-                          user.name ?? 'No Name',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: Colors.black),
-                        ),
-                        subtitle: Padding(
-                          padding: const EdgeInsets.only(top: 4.0),
-                          child: Text(
-                            "Tap to start chatting...",
-                            style: TextStyle(color: Colors.grey.shade500, fontSize: 14),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        trailing: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text("12:45 PM", style: TextStyle(color: Colors.grey.shade400, fontSize: 12)),
-                            const SizedBox(height: 5),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),*/
-
                 const Divider(height: 1),
                 Expanded(
                   child: Center(
@@ -291,15 +191,32 @@ class _HomePageState extends State<HomePage> {
                           ? _buildEmptyState()
                           : ListView
                           .builder(
-                        padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+                        padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 10),
                         itemCount: _filteredUsers.length,
                         itemBuilder: (context, index) {
                           final user = _filteredUsers[index];
                           final currentUserId = currentUser?.uid ?? '';
                           final chatId = generateChatId(currentUserId, user.uid);
-                          return Card(
-                            elevation: 5,
+                          return Container(
+                            margin:const EdgeInsets.symmetric(vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(color: Colors.grey.shade100),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.02),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            /*elevation: 1,
                             color: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadiusGeometry.circular(20),
+                              side:const BorderSide(width: 0.5, color: Colors.black54),
+                            ),*/
                             child: ListTile(
                               onTap: () =>
                                   Navigator.push(
@@ -321,10 +238,10 @@ class _HomePageState extends State<HomePage> {
                                     tag: user.uid,
                                     child: CircleAvatar(
                                       radius: 28,
-                                      backgroundColor: Colors.blue.shade50,
+                                      backgroundColor: Colors.blue,
                                       child: Text(
                                         user.name?[0].toUpperCase() ?? '?',
-                                        style: const TextStyle(color: Colors.blue,
+                                        style: const TextStyle(color: Colors.white,
                                             fontWeight: FontWeight.bold,
                                             fontSize: 20),
                                       ),
@@ -349,15 +266,15 @@ class _HomePageState extends State<HomePage> {
                               title: Text(
                                 user.name ?? 'No Name',
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 16),
+                                    fontWeight: FontWeight.bold, fontSize: 17),
                               ),
                               subtitle: Text(
                                 "Tap to chat",
                                 style: TextStyle(
-                                    color: Colors.grey.shade400, fontSize: 13),
+                                    color: Colors.grey.shade500, fontSize: 15),
                               ),
                               trailing: const Icon(
-                                  Icons.arrow_forward_ios_rounded, size: 14,
+                                  Icons.arrow_forward_ios_rounded, size: 18,
                                   color: Colors.black),
                             ),
                           );
