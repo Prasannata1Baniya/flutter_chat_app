@@ -35,6 +35,7 @@ lib/
 ## 📸 Screenshots
 <div align="center">
   <img src="assets/screenshots/login_page.png" width="1873" alt="Login Screen" />
+<img src="assets/screenshots/register_page.png" width="1330" alt="Register Screen" />
   <img src="assets/screenshots/chat_page.png" width="1889" alt="Chat Screen" />
   <img src="assets/screenshots/profile.png" width="1330" alt="Profile Screen" />
 </div>
