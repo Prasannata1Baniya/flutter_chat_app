@@ -29,13 +29,13 @@ lib/
 │   │   ├── data/          # Repositories and Models
 │   │   ├── domain/        # Entities and Abstract Repos
 │   │   └── presentation/  # Cubits and UI Pages
-└── main.dart              # Entry point
+└── main                   # Entry point
 
 
 ## 📸 Screenshots
-<div align="center">
-  <img src="assets/screenshots/login_page.png" width="1873" alt="Login Screen" />
-<img src="assets/screenshots/register_page.png" width="1330" alt="Register Screen" />
+<div style="display: flex; justify-content: space-between;">
+  <img src="assets/screenshots/login_page.png" width="1600" alt="Login Screen" />
+<img src="assets/screenshots/register_page.png" width="1635" alt="Register Screen" />
   <img src="assets/screenshots/chat_page.png" width="1889" alt="Chat Screen" />
   <img src="assets/screenshots/profile.png" width="1330" alt="Profile Screen" />
 </div>
