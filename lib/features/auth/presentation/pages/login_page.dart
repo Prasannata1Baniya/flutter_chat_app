@@ -91,10 +91,11 @@ class _LoginPageState extends State<LoginPage> {
 
 
                       // Email
-                      MyTextField(hText: "Email",
-                          controller: emailController,
-                          obscureText: false,
-                       validator: (value) {
+                      MyTextField(
+                        hText: "Email",
+                        controller: emailController,
+                        obscureText: false,
+                        validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your email';
                           }
@@ -103,32 +104,33 @@ class _LoginPageState extends State<LoginPage> {
                           }
                           return null;
                         },
-                          icon: const Icon(Icons.email_outlined),
+                        prefixIcon: const Icon(Icons.email_outlined, color: Colors.grey),
                       ),
                       const SizedBox(height: 16),
 
                       // Password
-                     MyTextField(hText: 'Password',
-                         controller: passwordController,
-                         obscureText: isObscured,
-                         validator: (value) {
-                           if (value == null || value.isEmpty) {
-                             return 'Please enter your password';
-                           }
-                           if (value.length < 6) {
-                             return 'Password must be at least 6 characters';
-                           }
-                           return null;
-                         },
-                         icon: IconButton(
-                           onPressed: () =>
-                               setState(() =>
-                               isObscured =
-                               !isObscured),
-                           icon: isObscured ? const  Icon(Icons.visibility_off_rounded) : const  Icon(Icons.visibility),
-                         ),
-
-                     ),
+                      MyTextField(
+                        hText: 'Password',
+                        controller: passwordController,
+                        obscureText: isObscured,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your password';
+                          }
+                          if (value.length < 6) {
+                            return 'Password must be at least 6 characters';
+                          }
+                          return null;
+                        },
+                        prefixIcon: const Icon(Icons.lock_outline, color: Colors.grey),
+                        suffixIcon: IconButton(
+                          onPressed: () => setState(() => isObscured = !isObscured),
+                          icon: Icon(
+                            isObscured ? Icons.visibility_off_rounded : Icons.visibility,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 10),
 
                       Align(

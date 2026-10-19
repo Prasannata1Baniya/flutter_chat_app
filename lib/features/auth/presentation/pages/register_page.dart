@@ -104,20 +104,21 @@ class _RegisterPageState extends State<RegisterPage> {
                         controller: nameController,
                         obscureText: false,
                         validator: (value) {
-                          if(value ==null || value.isEmpty){
-                            return 'please enter your full name';
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your full name';
                           }
                           return null;
-                        }, icon: const Icon(Icons.person),
+                        },
+                        prefixIcon: const Icon(Icons.person_outline, color: Colors.grey),
                       ),
                       const SizedBox(height: 16),
                       
-                      //Email
+                      // Email
                       MyTextField(
                         hText: "Email Address",
                         controller: emailController,
                         obscureText: false,
-                        validator: (value){
+                        validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your email';
                           }
@@ -125,24 +126,32 @@ class _RegisterPageState extends State<RegisterPage> {
                             return 'Enter a valid email address';
                           }
                           return null;
-                        }, icon:const Icon(Icons.email_outlined),
+                        },
+                        prefixIcon: const Icon(Icons.email_outlined, color: Colors.grey),
                       ),
                       const SizedBox(height: 16),
                       
-                      //Password
+                      // Password
                       MyTextField(
                         hText: "Password",
                         controller: passwordController,
-                        obscureText: true,
-                        validator: (value) =>   (value == null || value.length < 6)
-                            ? 'Short password'
-                            : null, 
-                        icon: IconButton(onPressed: (){
-                          setState(() {
-                            isPasswordObscured = !isPasswordObscured;
-                          });
-                        }, icon: isPasswordObscured ? const Icon(Icons.visibility_off_rounded)
-                            :const Icon(Icons.visibility)
+                        obscureText: isPasswordObscured,
+                        validator: (value) => (value == null || value.length < 6)
+                            ? 'Password must be at least 6 characters'
+                            : null,
+                        prefixIcon: const Icon(Icons.lock_outline, color: Colors.grey),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              isPasswordObscured = !isPasswordObscured;
+                            });
+                          },
+                          icon: Icon(
+                            isPasswordObscured
+                                ? Icons.visibility_off_rounded
+                                : Icons.visibility,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 32),
